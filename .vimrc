@@ -713,6 +713,8 @@ nnoremap <silent> <Space>rf :<C-u>LspReferences<CR>
 nnoremap <silent> <Space>rn :<C-u>LspRename<CR>
 nnoremap <silent> <Space>im :<C-u>LspImplementation<CR>
 nnoremap <silent> <Space>ho :<C-u>LspHover<CR>
+nnoremap <silent> <Space>ds :<C-u>LspDocumentSymbol<CR>
+nnoremap <silent> <Space>ca :<C-u>LspCodeAction<CR>
 "}}}
 "}}}
 
