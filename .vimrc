@@ -497,9 +497,9 @@ command! -bar ToScratchForFiles ToScratch | setlocal iskeyword+=.
 command! -bar -nargs=? ModsNew <mods> new | if <q-args> ==# 'Files:.' | edit `='[Files:' . fnamemodify(getcwd(), ':p:h') . ']'` | elseif len(<q-args>) | edit [<args>] | endif
 command! MRU <mods> ModsNew MRU | ToScratchForFiles | call setline(1, filter(v:oldfiles, 'filereadable(expand(v:val))'))
 command! MRUQuickFix call setqflist(map(filter(v:oldfiles, 'filereadable(expand(v:val))'), '{"filename": expand(v:val)}')) | copen
-"command! -nargs=1 -complete=command L <mods> ModsNew <args> | ToScratchForFiles | call setline(1, split(execute(<q-args>), '\n'))
-"command! Buffers <mods> L buffers
-"command! ScriptNames <mods> ModsNew ScriptNames | ToScratchForFiles | call setline(1, execute('scriptnames')->split("\n")->map({_, v -> split(v, ': ')[1]}))
+command! -nargs=1 -complete=command L <mods> ModsNew <args> | ToScratchForFiles | call setline(1, split(execute(<q-args>), '\n'))
+command! Buffers <mods> L buffers
+command! ScriptNames <mods> ModsNew ScriptNames | ToScratchForFiles | call setline(1, execute('scriptnames')->split("\n")->map({_, v -> split(v, ': ')[1]}))
 "}}}
 "}}}
 
