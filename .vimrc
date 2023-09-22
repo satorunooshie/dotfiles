@@ -590,7 +590,11 @@ nnoremap <ESC><ESC> :nohlsearch<CR>
 
 nnoremap <silent> <Space>wd :<C-u>windo diffthis<CR>
 " Browse oldfiles filtered by pattern.
-nnoremap <Leader>e  :<C-u>/ oldfiles<Home>browse filter /
+nnoremap <Leader>e :<C-u>/ oldfiles<Home>browse filter /
+nnoremap <Space>b :<C-u>buffer <C-d>
+nnoremap <Space>vb :<C-u>vert buffer <C-d>
+" Open the directory of the current file.
+nnoremap <Leader>d :<C-u>vertical split %:h<CR>
 " Improve replacement of twice the width of characters in linewise.
 xnoremap <expr> r mode() ==# 'V' ? "\<C-v>0o$r" : "r"
 
