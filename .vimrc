@@ -48,6 +48,10 @@ call add(s:plugins.opt, 'https://github.com/sgur/vim-textobj-parameter')
 call add(s:plugins.opt, 'https://github.com/kana/vim-operator-user')
 call add(s:plugins.opt, 'https://github.com/kana/vim-operator-replace')
 call add(s:plugins.opt, 'https://github.com/thinca/vim-qfreplace')
+call add(s:plugins.opt, 'https://github.com/mattn/vim-maketable')
+" Live preview substitute result and
+" highlight patterns and ranges for Ex commands in Command-line mode.
+call add(s:plugins.opt, 'https://github.com/markonm/traces.vim')
 " Highlight each by a different color.
 call add(s:plugins.opt, 'https://github.com/daisuzu/rainbowcyclone.vim')
 " Extended % matching.
