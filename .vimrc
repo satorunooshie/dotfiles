@@ -580,6 +580,8 @@ nnoremap <silent> <Space>cl :<C-u>call popup_clear()<CR>
 nnoremap <silent> <Space>hc :<C-u>helpclose<CR>
 nnoremap <silent> <C-j> :<C-u>bprev<CR>
 nnoremap <silent> <C-k> :<C-u>bnext<CR>
+nnoremap <silent> <C-h> :<C-u>tabprev<CR>
+nnoremap <silent> <C-l> :<C-u>tabnext<CR>
 
 nnoremap <Space>op :<C-u>set paste! paste?<CR>
 nnoremap <Space>on :<C-u>setlocal number! cursorline! number? cursorline?<CR>
