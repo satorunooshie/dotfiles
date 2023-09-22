@@ -318,7 +318,9 @@ set showtabline=2
 " Show (partial) command in the last line of the screen.
 set showcmd
 " Number of screen lines to use for the command-line.
-set cmdheight=2
+set cmdheight=1
+" Never show the current mode in the last line of the screen.
+set noshowmode
 " Show unprintable characters hexadecimal as <xx> instead of using ^C and ~C.
 " When inserting, can append a character with CTRL-V uxxxx.
 set display=uhex
@@ -363,12 +365,12 @@ endfunction "}}}
 set tabline=%!MakeTabLine()
 "}}}
 
-" Statusline settings "{{{
-augroup Statusline "{{{
-    autocmd! Statusline
-    autocmd BufEnter * call <SID>SetFullStatusline()
-    autocmd BufLeave,BufNew,BufRead,BufNewFile * call <SID>SetFullStatusline()
-    "autocmd BufLeave,BufNew,BufRead,BufNewFile * call <SID>SetSimpleStatusline()
+" StatusLine settings "{{{
+augroup StatusLine "{{{
+    autocmd! StatusLine
+    autocmd BufEnter * call <SID>SetFullStatusLine()
+    autocmd BufLeave,BufNew,BufRead,BufNewFile * call <SID>SetFullStatusLine()
+    "autocmd BufLeave,BufNew,BufRead,BufNewFile * call <SID>SetSimpleStatusLine()
 augroup END "}}}
 
 let g:statusline_max_path = 50
@@ -392,35 +394,42 @@ function! StatusLineRealSyntaxName() "{{{
     endif
 endfunction "}}}
 
-function! s:SetFullStatusline() "{{{
+function! StatusLineMode() abort "{{{
+    let l:modes = { 'n': 'NORMAL', 'v': 'VCHAR', 'V': 'VLINE', '': 'VBLOCK',
+                \ 'i': 'INSERT', 'R': 'REPLACE', 's': 'SCHAR', 'S': 'SLINE','': 'SBLOCK',
+                \ 't': 'JOB', 'c': 'COMMAND', '!': 'SHELL', 'r': 'PROMPT', }
+    return l:modes[mode()[0]]
+endfunction "}}}
+
+function! s:SetFullStatusLine() "{{{
     setlocal statusline=
 
-    setlocal statusline+=%#StatuslineBufNr#\ %-1.2n
-    setlocal statusline+=\ %h%#StatuslineFlag#%m%r%w
-    setlocal statusline+=%#StatuslinePath#\ %-0.80{StatusLineGetPath()}%0*
-    setlocal statusline+=%#StatuslineFileName#\/%t
-    setlocal statusline+=%#StatuslineFileSize#\ \(%{GetFileSize()}\)
-    "setlocal statusline+=%#StatuslineTermEnc#(%{&termencoding},
-    "setlocal statusline+=%#StatuslineFileEnc#%{&fileencoding},
-    "setlocal statusline+=%#StatuslineFileFormat#%{&fileformat}\)
-    setlocal statusline+=%#StatuslineFileType#\ %{strlen(&ft)?'['.&ft.']':'[*]'}
-    setlocal statusline+=%#StatuslineSyntaxName#\ %{synIDattr(synID(line('.'),col('.'),1),'name')}\ %0*
-    setlocal statusline+=%#StatuslineRealSyntaxName#\ %{StatusLineRealSyntaxName()}\ %0*
+    setlocal statusline+=%#StatusLineBufNr#\ %-1.2n
+    setlocal statusline+=\ %h%#StatusLineFlag#%m%r%w
+    setlocal statusline+=%#StatusLinePath#\ %-0.50{StatusLineGetPath()}%0*
+    setlocal statusline+=%#StatusLineFileName#\/%t
+    setlocal statusline+=%#StatusLineFileSize#\ \(%{GetFileSize()}\)
+    "setlocal statusline+=%#StatusLineTermEnc#(%{&termencoding},
+    "setlocal statusline+=%#StatusLineFileEnc#%{&fileencoding},
+    "setlocal statusline+=%#StatusLineFileFormat#%{&fileformat}\)
+    setlocal statusline+=%#StatusLineFileType#\ %{strlen(&ft)?'['.&ft.']':'[*]'}
+    setlocal statusline+=%#StatusLineMode#\ %{StatusLineMode()}
+    setlocal statusline+=%#StatusLineSyntaxName#\ %{synIDattr(synID(line('.'),col('.'),1),'name')}\ %0*
+    setlocal statusline+=%#StatusLineRealSyntaxName#\ %{StatusLineRealSyntaxName()}\ %0*
 
     " Separation point between alignment sections.
     setlocal statusline+=%=
-
-    setlocal statusline+=%#StatuslineCurrentChar#\ %B[%b]
-    setlocal statusline+=%#StatuslinePosition#\ %-10.(%l/%L,%c%)
-    setlocal statusline+=%#StatuslinePositionPercentage#\ %p%%
+    setlocal statusline+=%#StatusLineCurrentChar#\ %B[%b]
+    setlocal statusline+=%#StatusLinePosition#\ %-10.(%l/%L,%c%)
+    setlocal statusline+=%#StatusLinePositionPercentage#\ %p%%
 endfunction "}}}
 
 " Set a simple statusline when the current buffer is not active.
-function! s:SetSimpleStatusline() "{{{
+function! s:SetSimpleStatusLine() "{{{
     setlocal statusline=
 
-    setlocal statusline+=%#StatuslineNCPath#%-0.20{StatusLineGetPath()}%0*
-    setlocal statusline+=%#StatuslineNCFileName#\/%t
+    setlocal statusline+=%#StatusLineNCPath#%-0.20{StatusLineGetPath()}%0*
+    setlocal statusline+=%#StatusLineNCFileName#\/%t
 endfunction "}}}
 
 " Return the current file size in human readable format.
