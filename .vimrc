@@ -485,6 +485,7 @@ autocmd BufReadPost *
     \ endif
 
 autocmd FileType typescript setlocal shiftwidth=2 tabstop=2
+autocmd FileType typescriptreact setlocal shiftwidth=2 tabstop=2
 autocmd FileType yaml setlocal shiftwidth=2 tabstop=2
 autocmd FileType make setlocal shiftwidth=2 tabstop=2
 autocmd FileType json setlocal shiftwidth=2 tabstop=2
