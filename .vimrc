@@ -484,6 +484,7 @@ autocmd BufReadPost *
     \   exe "normal! g`\"" |
     \ endif
 
+autocmd FileType typescript setlocal shiftwidth=2 tabstop=2
 autocmd FileType yaml setlocal shiftwidth=2 tabstop=2
 autocmd FileType make setlocal shiftwidth=2 tabstop=2
 autocmd FileType json setlocal shiftwidth=2 tabstop=2
