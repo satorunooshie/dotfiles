@@ -202,9 +202,9 @@ set nobackup
 set pumheight=15
 " Register '*' and '+' for all yank, delete, change and put operations.
 set clipboard=unnamed,unnamedplus
-set tabstop=4
-set softtabstop=4
-set shiftwidth=4
+set tabstop=2
+set softtabstop=2
+set shiftwidth=2
 set smarttab
 " Spaces are used in indents.
 set expandtab
@@ -484,12 +484,6 @@ autocmd BufReadPost *
     \   exe "normal! g`\"" |
     \ endif
 
-autocmd FileType typescript setlocal shiftwidth=2 tabstop=2
-autocmd FileType typescriptreact setlocal shiftwidth=2 tabstop=2
-autocmd FileType yaml setlocal shiftwidth=2 tabstop=2
-autocmd FileType make setlocal shiftwidth=2 tabstop=2
-autocmd FileType json setlocal shiftwidth=2 tabstop=2
-autocmd FileType sql setlocal shiftwidth=2 tabstop=2
 autocmd FileType proto setlocal shiftwidth=2 tabstop=2 makeprg=buf
 "}}}
 
