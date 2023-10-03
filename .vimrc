@@ -7,6 +7,14 @@ augroup MyVimrcCmd
     autocmd!
 augroup END
 
+" Use Vim settings, rather than Vi settings (much better!).
+" This must be first, because it changes other options as a side effect.
+" Avoid side effects when it was already reset.
+" Using `-u` argument has the side effect that the 'compatible' option will be on by default.
+if &compatible
+  set nocompatible
+endif
+
 " Note: that the order of the following commands is important.
 set encoding=utf-8
 scriptencoding utf-8
