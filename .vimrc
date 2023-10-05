@@ -329,7 +329,9 @@ set showtabline=2
 " Show (partial) command in the last line of the screen.
 set showcmd
 " Number of screen lines to use for the command-line.
-set cmdheight=1
+" Setting as 1 shows Press ENTER or type command to continue when a long
+" message is displayed.
+set cmdheight=2
 " Never show the current mode in the last line of the screen.
 set noshowmode
 " Show unprintable characters hexadecimal as <xx> instead of using ^C and ~C.
