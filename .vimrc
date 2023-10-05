@@ -29,9 +29,8 @@ syntax on
 " s: Maximum size of an item in Kbyte.
 " ': Maximum number of previously edited files for which the marks are remembered.
 " :: Maximum number of items in the command-line history to be saved.
-set viminfo+=<1000,h,s100,'10000,:100000
-" delete default setting
-set viminfo-=<50,s10,'100
+" overwrite default setting
+set viminfo=<1000,h,s100,'10000,:100000
 set rtp+=/opt/homebrew/opt/fzf
 
 filetype plugin indent on
