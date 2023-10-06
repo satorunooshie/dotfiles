@@ -574,6 +574,7 @@ let g:lsp_settings = {
 
 let g:lsp_log_verbose = 1
 let g:lsp_log_file = expand('~/tmp/vim-lsp-'.strftime('%Y%m%d').'.log')
+let g:lsp_settings['gopls']['cmd'] = ['gopls', '-logfile', expand('~/tmp/gopls-'.strftime('%Y%m%d').'.log')]
 "}}}
 "}}}
 
