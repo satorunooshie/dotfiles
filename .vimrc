@@ -133,13 +133,17 @@ function! UpdateHelpTags() "{{{
                 continue
             endif
 
-            echomsg 'helptags: ' . dst
+            echo 'helptags: ' . dst
             call s:create_helptags(expand(dst . '/doc/'))
         endfor
     endfor
 endfunction "}}}
 
 function! UpdatePackPlugins() "{{{
+    let prevbuf = bufnr('[update plugins]')
+    if prevbuf != -1
+        execute prevbuf . 'bwipeout!'
+    endif
     topleft split
     edit `='[update plugins]'`
     setlocal buftype=nofile
@@ -154,7 +158,7 @@ function! PluginUpdateHandler(timer) "{{{
     let dst = expand(dir . '/' . split(url, '/')[-1])
 
     let cmd = printf('git -C %s pull --ff --ff-only', dst)
-    call job_start(cmd, {'out_io': 'buffer', 'out_name': '[update plugins]'})
+    call job_start(cmd, {'out_io': 'buffer', 'out_name': '[update plugins]', 'out_modifiable': 0})
 
     let s:pidx += 1
     if s:pidx == len(s:plugins.opt)
