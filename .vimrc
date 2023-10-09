@@ -284,12 +284,12 @@ if &term =~# 'xterm'
     let &t_EI = "\<Esc>[1 q"
 endif
 
-" Visualization of the full-width space at the end of the line "{{{
+" Visualization of the spaces at the end of the line "{{{
 " https://vim-jp.org/vim-users-jp/2009/07/12/Hack-40.html
 augroup highlightIdegraphicSpace
     autocmd!
     autocmd Colorscheme * highlight IdeographicSpace term=underline ctermbg=45 guibg=Blue
-    autocmd VimEnter,WinEnter * match IdeographicSpace /　/
+    autocmd VimEnter,WinEnter * match IdeographicSpace /　\|\s\+$/
 augroup END
 "}}}
 
