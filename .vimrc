@@ -472,6 +472,21 @@ set hlsearch
 "}}}
 
 "---------------------------------------------------------------------------
+" Files:"{{{
+"
+let s:files_cmd = 'find '
+let s:files_opts = '-type f'
+command! -bar ToScratch setlocal buftype=nofile bufhidden=hide noswapfile
+command! -bar ToScratchForFiles ToScratch | setlocal iskeyword+=.
+command! -bar -nargs=? ModsNew <mods> new | if <q-args> ==# 'Files:.' | edit `='[Files:' . fnamemodify(getcwd(), ':p:h') . ']'` | elseif len(<q-args>) | edit [<args>] | endif
+command! MRU <mods> ModsNew MRU | ToScratchForFiles | call setline(1, filter(v:oldfiles, 'filereadable(expand(v:val))'))
+command! MRUQuickFix call setqflist(map(filter(v:oldfiles, 'filereadable(expand(v:val))'), '{"filename": expand(v:val)}')) | copen
+command! -nargs=1 -complete=command L <mods> ModsNew <args> | ToScratchForFiles | call setline(1, split(execute(<q-args>), '\n'))
+command! Buffers <mods> L buffers
+command! ScriptNames <mods> ModsNew ScriptNames | ToScratchForFiles | call setline(1, execute('scriptnames')->split("\n")->map({_, v -> split(v, ': ')[1]}))
+"}}}
+
+"---------------------------------------------------------------------------
 " Utilities:"{{{
 "
 " :TCD to the directory of the current file or specified path. "{{{
@@ -500,19 +515,19 @@ autocmd BufReadPost *
 autocmd FileType proto setlocal shiftwidth=2 tabstop=2 makeprg=buf
 "}}}
 
-"---------------------------------------------------------------------------
-" Files:"{{{
-"
-let s:files_cmd = 'find '
-let s:files_opts = '-type f'
-command! -bar ToScratch setlocal buftype=nofile bufhidden=hide noswapfile
-command! -bar ToScratchForFiles ToScratch | setlocal iskeyword+=.
-command! -bar -nargs=? ModsNew <mods> new | if <q-args> ==# 'Files:.' | edit `='[Files:' . fnamemodify(getcwd(), ':p:h') . ']'` | elseif len(<q-args>) | edit [<args>] | endif
-command! MRU <mods> ModsNew MRU | ToScratchForFiles | call setline(1, filter(v:oldfiles, 'filereadable(expand(v:val))'))
-command! MRUQuickFix call setqflist(map(filter(v:oldfiles, 'filereadable(expand(v:val))'), '{"filename": expand(v:val)}')) | copen
-command! -nargs=1 -complete=command L <mods> ModsNew <args> | ToScratchForFiles | call setline(1, split(execute(<q-args>), '\n'))
-command! Buffers <mods> L buffers
-command! ScriptNames <mods> ModsNew ScriptNames | ToScratchForFiles | call setline(1, execute('scriptnames')->split("\n")->map({_, v -> split(v, ': ')[1]}))
+" Sanitize the command line history. "{{{
+augroup sanitizeHistory
+  autocmd!
+  autocmd ModeChanged c:* call s:SanitizeHistory()
+augroup END
+
+function! s:SanitizeHistory() abort
+  let cmd = histget(":", -1)
+  if cmd == "x" || cmd == "xa" || cmd == "e!" ||
+        \ cmd == "vs" || cmd =~# "^w\\?q\\?a\\?!\\?$"
+    call histdel(":", -1)
+  endif
+endfunction
 "}}}
 "}}}
 
