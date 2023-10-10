@@ -670,14 +670,11 @@ nnoremap # #zz
 nnoremap g* g*zz
 nnoremap g# g#zz
 
-" Move to the position last edited.
-nnoremap gb '[
-nnoremap gp ']
-
-" Select last changed.
-nnoremap gc `[v`]
-vnoremap gc :<C-u>normal gc<CR>
-onoremap gc :<C-u>normal gc<CR>
+" Move to the position previously changed or yanked.
+nnoremap lc '[
+nnoremap lc ']
+" Select previously changed or yanked.
+nnoremap slc '[v']
 
 " 'Quote'
 onoremap aq a'
