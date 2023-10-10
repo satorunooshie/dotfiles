@@ -4,7 +4,7 @@
 " Initialize:"{{{
 "
 augroup MyVimrcCmd
-    autocmd!
+  autocmd!
 augroup END
 
 " Use Vim settings, rather than Vi settings (much better!).
@@ -86,111 +86,111 @@ call add(s:plugins.opt, 'https://github.com/satorunooshie/vim-drawbox')
 call add(s:plugins.opt, 'https://github.com/lifepillar/vim-colortemplate')
 
 function! s:has_plugin(name)
-    return globpath(&runtimepath, 'plugin/' . a:name . '.vim') !=# ''
-                \ || globpath(&runtimepath, 'autoload/' . a:name . '.vim') !=# ''
+  return globpath(&runtimepath, 'plugin/' . a:name . '.vim') !=# ''
+        \ || globpath(&runtimepath, 'autoload/' . a:name . '.vim') !=# ''
 endfunction
 
 function! s:mkdir_if_not_exists(path)
-    if !isdirectory(a:path)
-        call mkdir(a:path, 'p')
-    endif
+  if !isdirectory(a:path)
+    call mkdir(a:path, 'p')
+  endif
 endfunction
 
 function! s:create_helptags(path)
-    if isdirectory(a:path)
-        execute 'helptags ' . a:path
-    endif
+  if isdirectory(a:path)
+    execute 'helptags ' . a:path
+  endif
 endfunction
 
 function! InstallPackPlugins() "{{{
-    for key in keys(s:plugins)
-        let dir = expand($PACKPATH . '/' . key)
-        call s:mkdir_if_not_exists(dir)
+  for key in keys(s:plugins)
+    let dir = expand($PACKPATH . '/' . key)
+    call s:mkdir_if_not_exists(dir)
 
-        for url in s:plugins[key]
-            let dst = expand(dir . '/' . split(url, '/')[-1])
-            if isdirectory(dst)
-                " Plugin has already been installed.
-                continue
-            endif
+    for url in s:plugins[key]
+      let dst = expand(dir . '/' . split(url, '/')[-1])
+      if isdirectory(dst)
+        " Plugin has already been installed.
+        continue
+      endif
 
-            echo 'installing: ' . dst
-            let cmd = printf('git clone --recursive %s %s', url, dst)
-            call system(cmd)
-            call s:create_helptags(expand(dst . '/doc/'))
-        endfor
+      echo 'installing: ' . dst
+      let cmd = printf('git clone --recursive %s %s', url, dst)
+      call system(cmd)
+      call s:create_helptags(expand(dst . '/doc/'))
     endfor
+  endfor
 endfunction "}}}
 
 function! UpdateHelpTags() "{{{
-    for key in keys(s:plugins)
-        let dir = expand($PACKPATH . '/' . key)
+  for key in keys(s:plugins)
+    let dir = expand($PACKPATH . '/' . key)
 
-        for url in s:plugins[key]
-            let dst = expand(dir . '/' . split(url, '/')[-1])
-            if !isdirectory(dst)
-                " plugin is not installed
-                continue
-            endif
+    for url in s:plugins[key]
+      let dst = expand(dir . '/' . split(url, '/')[-1])
+      if !isdirectory(dst)
+        " plugin is not installed
+        continue
+      endif
 
-            echo 'helptags: ' . dst
-            call s:create_helptags(expand(dst . '/doc/'))
-        endfor
+      echo 'helptags: ' . dst
+      call s:create_helptags(expand(dst . '/doc/'))
     endfor
+  endfor
 endfunction "}}}
 
 function! UpdatePackPlugins() "{{{
-    let prevbuf = bufnr('[update plugins]')
-    if prevbuf != -1
-        execute prevbuf . 'bwipeout!'
-    endif
-    topleft split
-    edit `='[update plugins]'`
-    setlocal buftype=nofile
+  let prevbuf = bufnr('[update plugins]')
+  if prevbuf != -1
+    execute prevbuf . 'bwipeout!'
+  endif
+  topleft split
+  edit `='[update plugins]'`
+  setlocal buftype=nofile
 
-    let s:pidx = 0
-    call timer_start(100, 'PluginUpdateHandler', {'repeat': len(s:plugins.opt)})
+  let s:pidx = 0
+  call timer_start(100, 'PluginUpdateHandler', {'repeat': len(s:plugins.opt)})
 endfunction "}}}
 
 function! PluginUpdateHandler(timer) "{{{
-    let dir = expand($PACKPATH . '/' . 'opt')
-    let url = s:plugins.opt[s:pidx]
-    let dst = expand(dir . '/' . split(url, '/')[-1])
+  let dir = expand($PACKPATH . '/' . 'opt')
+  let url = s:plugins.opt[s:pidx]
+  let dst = expand(dir . '/' . split(url, '/')[-1])
 
-    let cmd = printf('git -C %s pull --ff --ff-only', dst)
-    call job_start(cmd, {'out_io': 'buffer', 'out_name': '[update plugins]', 'out_modifiable': 0})
+  let cmd = printf('git -C %s pull --ff --ff-only', dst)
+  call job_start(cmd, {'out_io': 'buffer', 'out_name': '[update plugins]', 'out_modifiable': 0})
 
-    let s:pidx += 1
-    if s:pidx == len(s:plugins.opt)
-        call UpdateHelpTags()
-    endif
+  let s:pidx += 1
+  if s:pidx == len(s:plugins.opt)
+    call UpdateHelpTags()
+  endif
 endfunction "}}}
 
 let s:pidx = 0
 function! PackAddHandler(timer) "{{{
-    let plugin_name = split(s:plugins.opt[s:pidx], '/')[-1]
+  let plugin_name = split(s:plugins.opt[s:pidx], '/')[-1]
 
-    let plugin_path = expand($PACKPATH . '/opt/' . plugin_name)
-    if isdirectory(plugin_path)
-        execute 'packadd ' . plugin_name
-    endif
+  let plugin_path = expand($PACKPATH . '/opt/' . plugin_name)
+  if isdirectory(plugin_path)
+    execute 'packadd ' . plugin_name
+  endif
 
-    let s:pidx += 1
-    if s:pidx == len(s:plugins.opt)
-        packadd cfilter
-        " For filetype plugin.
-        doautocmd FileType
-        " For vim-lsp.
-        call lsp#enable()
-        " For vim-signify.
-        SignifyEnable
-    endif
+  let s:pidx += 1
+  if s:pidx == len(s:plugins.opt)
+    packadd cfilter
+    " For filetype plugin.
+    doautocmd FileType
+    " For vim-lsp.
+    call lsp#enable()
+    " For vim-signify.
+    SignifyEnable
+  endif
 endfunction "}}}
 
 if has('vim_starting') && has('timers')
-    packadd vim-textobj-user
-    packadd vim-operator-user
-    autocmd MyVimrcCmd VimEnter * call timer_start(1, 'PackAddHandler', {'repeat': len(s:plugins.opt)})
+  packadd vim-textobj-user
+  packadd vim-operator-user
+  autocmd MyVimrcCmd VimEnter * call timer_start(1, 'PackAddHandler', {'repeat': len(s:plugins.opt)})
 endif
 "}}}
 
@@ -279,17 +279,17 @@ autocmd MyVimrcCmd InsertLeave * if &paste | set nopaste | endif
 set t_Co=256
 " Change cursor shape in insert mode.
 if &term =~# 'xterm'
-    let &t_SI = "\<Esc>[5 q"
-    let &t_SR = "\<Esc>[3 q"
-    let &t_EI = "\<Esc>[1 q"
+  let &t_SI = "\<Esc>[5 q"
+  let &t_SR = "\<Esc>[3 q"
+  let &t_EI = "\<Esc>[1 q"
 endif
 
 " Visualization of the spaces at the end of the line "{{{
 " https://vim-jp.org/vim-users-jp/2009/07/12/Hack-40.html
 augroup highlightIdegraphicSpace
-    autocmd!
-    autocmd Colorscheme * highlight IdeographicSpace term=underline ctermbg=45 guibg=Blue
-    autocmd VimEnter,WinEnter * match IdeographicSpace /　\|\s\+$/
+  autocmd!
+  autocmd Colorscheme * highlight IdeographicSpace term=underline ctermbg=45 guibg=Blue
+  autocmd VimEnter,WinEnter * match IdeographicSpace /　\|\s\+$/
 augroup END
 "}}}
 
@@ -349,34 +349,34 @@ set listchars=tab:>-,extends:<,precedes:>,trail:-,eol:$,nbsp:%
 
 " Tabline settings "{{{
 function! s:is_modified(n) "{{{
-    return getbufvar(a:n, '&modified') == 1 ? '+' : ''
+  return getbufvar(a:n, '&modified') == 1 ? '+' : ''
 endfunction "}}}
 
 function! s:tabpage_label(n) "{{{
-    let title = gettabwinvar(a:n, 0, 'title')
-    if title !=# ''
-        return title
-    endif
+  let title = gettabwinvar(a:n, 0, 'title')
+  if title !=# ''
+    return title
+  endif
 
-    let bufnrs = tabpagebuflist(a:n)
-    let buflist = join(map(copy(bufnrs), 'v:val . s:is_modified(v:val)'), ',')
+  let bufnrs = tabpagebuflist(a:n)
+  let buflist = join(map(copy(bufnrs), 'v:val . s:is_modified(v:val)'), ',')
 
-    let curbufnr = bufnrs[tabpagewinnr(a:n) - 1]
-    let fname = pathshorten(bufname(curbufnr))
+  let curbufnr = bufnrs[tabpagewinnr(a:n) - 1]
+  let fname = pathshorten(bufname(curbufnr))
 
-    let label = '[' . buflist . ']' . fname
+  let label = '[' . buflist . ']' . fname
 
-    let hi = a:n is tabpagenr() ? '%#TabLineSel#' : '%#TabLine#'
+  let hi = a:n is tabpagenr() ? '%#TabLineSel#' : '%#TabLine#'
 
-    return '%' . a:n . 'T' . hi . label . '%T%#TabLineFill#'
+  return '%' . a:n . 'T' . hi . label . '%T%#TabLineFill#'
 endfunction "}}}
 
 function! MakeTabLine() "{{{
-    let titles =map(range(1, tabpagenr('$')), 's:tabpage_label(v:val)')
-    let sep = ' | '
-    let tabpages = join(titles, sep) . sep . '%#TabLineFill#%T'
-    let info = fnamemodify(getcwd(), '~:') . ' '
-    return tabpages . '%=' . info
+  let titles =map(range(1, tabpagenr('$')), 's:tabpage_label(v:val)')
+  let sep = ' | '
+  let tabpages = join(titles, sep) . sep . '%#TabLineFill#%T'
+  let info = fnamemodify(getcwd(), '~:') . ' '
+  return tabpages . '%=' . info
 endfunction "}}}
 
 set tabline=%!MakeTabLine()
@@ -384,79 +384,79 @@ set tabline=%!MakeTabLine()
 
 " StatusLine settings "{{{
 augroup StatusLine "{{{
-    autocmd! StatusLine
-    autocmd BufEnter * call <SID>SetFullStatusLine()
-    autocmd BufLeave,BufNew,BufRead,BufNewFile * call <SID>SetFullStatusLine()
-    "autocmd BufLeave,BufNew,BufRead,BufNewFile * call <SID>SetSimpleStatusLine()
+  autocmd! StatusLine
+  autocmd BufEnter * call <SID>SetFullStatusLine()
+  autocmd BufLeave,BufNew,BufRead,BufNewFile * call <SID>SetFullStatusLine()
+  "autocmd BufLeave,BufNew,BufRead,BufNewFile * call <SID>SetSimpleStatusLine()
 augroup END "}}}
 
 let g:statusline_max_path = 50
 function! StatusLineGetPath() "{{{
-    let p = expand('%:.:h')
-    let p = substitute(p, expand('$HOME'), '~', '')
-    if len(p) > g:statusline_max_path
-        let p = simplify(p)
-        let p = pathshorten(p)
-    endif
-    return p
+  let p = expand('%:.:h')
+  let p = substitute(p, expand('$HOME'), '~', '')
+  if len(p) > g:statusline_max_path
+    let p = simplify(p)
+    let p = pathshorten(p)
+  endif
+  return p
 endfunction "}}}
 
 function! StatusLineRealSyntaxName() "{{{
-    let synId = synID(line('.'),col('.'),1)
-    let realSynId = synIDtrans(synId)
-    if synId == realSynId
-        return 'Normal'
-    else
-        return synIDattr( realSynId, 'name' )
-    endif
+  let synId = synID(line('.'),col('.'),1)
+  let realSynId = synIDtrans(synId)
+  if synId == realSynId
+    return 'Normal'
+  else
+    return synIDattr( realSynId, 'name' )
+  endif
 endfunction "}}}
 
 function! StatusLineMode() abort "{{{
-    let l:modes = { 'n': 'NORMAL', 'v': 'VCHAR', 'V': 'VLINE', '': 'VBLOCK',
-                \ 'i': 'INSERT', 'R': 'REPLACE', 's': 'SCHAR', 'S': 'SLINE','': 'SBLOCK',
-                \ 't': 'JOB', 'c': 'COMMAND', '!': 'SHELL', 'r': 'PROMPT', }
-    return l:modes[mode()[0]]
+  let l:modes = { 'n': 'NORMAL', 'v': 'VCHAR', 'V': 'VLINE', '': 'VBLOCK',
+        \ 'i': 'INSERT', 'R': 'REPLACE', 's': 'SCHAR', 'S': 'SLINE','': 'SBLOCK',
+        \ 't': 'JOB', 'c': 'COMMAND', '!': 'SHELL', 'r': 'PROMPT', }
+  return l:modes[mode()[0]]
 endfunction "}}}
 
 function! s:SetFullStatusLine() "{{{
-    setlocal statusline=
+  setlocal statusline=
 
-    setlocal statusline+=%#StatusLineBufNr#\ %-1.2n
-    setlocal statusline+=\ %h%#StatusLineFlag#%m%r%w
-    setlocal statusline+=%#StatusLinePath#\ %-0.50{StatusLineGetPath()}%0*
-    setlocal statusline+=%#StatusLineFileName#\/%t
-    setlocal statusline+=%#StatusLineFileSize#\ \(%{GetFileSize()}\)
-    "setlocal statusline+=%#StatusLineTermEnc#(%{&termencoding},
-    "setlocal statusline+=%#StatusLineFileEnc#%{&fileencoding},
-    "setlocal statusline+=%#StatusLineFileFormat#%{&fileformat}\)
-    setlocal statusline+=%#StatusLineFileType#\ %{strlen(&ft)?'['.&ft.']':'[*]'}
-    setlocal statusline+=%#StatusLineMode#\ %{StatusLineMode()}
-    setlocal statusline+=%#StatusLineSyntaxName#\ %{synIDattr(synID(line('.'),col('.'),1),'name')}\ %0*
-    setlocal statusline+=%#StatusLineRealSyntaxName#\ %{StatusLineRealSyntaxName()}\ %0*
+  setlocal statusline+=%#StatusLineBufNr#\ %-1.2n
+  setlocal statusline+=\ %h%#StatusLineFlag#%m%r%w
+  setlocal statusline+=%#StatusLinePath#\ %-0.50{StatusLineGetPath()}%0*
+  setlocal statusline+=%#StatusLineFileName#\/%t
+  setlocal statusline+=%#StatusLineFileSize#\ \(%{GetFileSize()}\)
+  "setlocal statusline+=%#StatusLineTermEnc#(%{&termencoding},
+  "setlocal statusline+=%#StatusLineFileEnc#%{&fileencoding},
+  "setlocal statusline+=%#StatusLineFileFormat#%{&fileformat}\)
+  setlocal statusline+=%#StatusLineFileType#\ %{strlen(&ft)?'['.&ft.']':'[*]'}
+  setlocal statusline+=%#StatusLineMode#\ %{StatusLineMode()}
+  setlocal statusline+=%#StatusLineSyntaxName#\ %{synIDattr(synID(line('.'),col('.'),1),'name')}\ %0*
+  setlocal statusline+=%#StatusLineRealSyntaxName#\ %{StatusLineRealSyntaxName()}\ %0*
 
-    " Separation point between alignment sections.
-    setlocal statusline+=%=
-    setlocal statusline+=%#StatusLineCurrentChar#\ %B[%b]
-    setlocal statusline+=%#StatusLinePosition#\ %-10.(%l/%L,%c%)
-    setlocal statusline+=%#StatusLinePositionPercentage#\ %p%%
+  " Separation point between alignment sections.
+  setlocal statusline+=%=
+  setlocal statusline+=%#StatusLineCurrentChar#\ %B[%b]
+  setlocal statusline+=%#StatusLinePosition#\ %-10.(%l/%L,%c%)
+  setlocal statusline+=%#StatusLinePositionPercentage#\ %p%%
 endfunction "}}}
 
 " Set a simple statusline when the current buffer is not active.
 function! s:SetSimpleStatusLine() "{{{
-    setlocal statusline=
+  setlocal statusline=
 
-    setlocal statusline+=%#StatusLineNCPath#%-0.20{StatusLineGetPath()}%0*
-    setlocal statusline+=%#StatusLineNCFileName#\/%t
+  setlocal statusline+=%#StatusLineNCPath#%-0.20{StatusLineGetPath()}%0*
+  setlocal statusline+=%#StatusLineNCFileName#\/%t
 endfunction "}}}
 
 " Return the current file size in human readable format.
 function! GetFileSize() "{{{
-    let l:bytes = &encoding ==# &fileencoding || &fileencoding ==# ''
-                \        ? line2byte(line('$') + 1) - 1 : getfsize(expand('%'))
-    let l:sizes = ['B', 'KB', 'MB', 'GB']
-    let l:i = 0
-    while l:bytes >= 1024 | let l:bytes = l:bytes / 1024.0 | let l:i += 1 | endwhile
-    return l:bytes > 0 ? printf('%.2f%s', l:bytes, l:sizes[l:i]) : ''
+  let l:bytes = &encoding ==# &fileencoding || &fileencoding ==# ''
+        \        ? line2byte(line('$') + 1) - 1 : getfsize(expand('%'))
+  let l:sizes = ['B', 'KB', 'MB', 'GB']
+  let l:i = 0
+  while l:bytes >= 1024 | let l:bytes = l:bytes / 1024.0 | let l:i += 1 | endwhile
+  return l:bytes > 0 ? printf('%.2f%s', l:bytes, l:sizes[l:i]) : ''
 endfunction "}}}
 "}}}
 
@@ -492,25 +492,25 @@ command! ScriptNames <mods> ModsNew ScriptNames | ToScratchForFiles | call setli
 " :TCD to the directory of the current file or specified path. "{{{
 command! -nargs=? -complete=dir -bang TCD call s:ChangeCurrentDir('<args>', '<bang>')
 function! s:ChangeCurrentDir(directory, bang)
-    if a:directory == ''
-        if &buftype !=# 'terminal'
-            tcd %:p:h
-        endif
-    else
-        execute 'tcd' . a:directory
+  if a:directory == ''
+    if &buftype !=# 'terminal'
+      tcd %:p:h
     endif
+  else
+    execute 'tcd' . a:directory
+  endif
 
-    if a:bang == ''
-        pwd
-    endif
+  if a:bang == ''
+    pwd
+  endif
 endfunction
 "}}}
 
 " Restore cursor position automatically. "{{{
 autocmd BufReadPost *
-    \ if line("'\"") > 1 && line("'\"") <= line("$") |
-    \   exe "normal! g`\"" |
-    \ endif
+      \ if line("'\"") > 1 && line("'\"") <= line("$") |
+      \   exe "normal! g`\"" |
+      \ endif
 
 autocmd FileType proto setlocal shiftwidth=2 tabstop=2 makeprg=buf
 "}}}
@@ -538,13 +538,13 @@ endfunction
 " vim-quickrun:"{{{
 "
 if !exists('g:quickrun_config')
-    let g:quickrun_config = {}
+  let g:quickrun_config = {}
 endif
 
 let g:quickrun_config['_'] = {
-    \     'outputter/buffer/split' : ':botright 8sp',
-    \     'runner' : 'job',
-    \ }
+      \     'outputter/buffer/split' : ':botright 8sp',
+      \     'runner' : 'job',
+      \ }
 "}}}
 
 "---------------------------------------------------------------------------
@@ -562,34 +562,34 @@ let g:goimports_simplify = 1
 let g:lsp_tagfunc_source_methods = ['definition']
 
 function! s:on_lsp_buffer_enabled() abort
-    setlocal omnifunc=lsp#complete
-    setlocal tagfunc=lsp#tagfunc
+  setlocal omnifunc=lsp#complete
+  setlocal tagfunc=lsp#tagfunc
 endfunction
 
 augroup lsp_install
-    au!
-    autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
+  au!
+  autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
 augroup END
 
 " Format and organize imports on save.
 autocmd! BufWritePre *.go call execute('LspDocumentFormatSync') | call execute('LspCodeActionSync source.organizeImports')
 
 let g:lsp_settings = {
-    \    'gopls': {
-    \        'initialization_options': {
-    \            'matcher': 'fuzzy',
-    \            'completeUnimported': v:false,
-    \            'deepCompletion': v:false,
-    \            'usePlaceholders': v:false,
-    \            'symbolMatcher': 'fuzzy',
-    \            'symbolStyle': 'full',
-    \            'gofumpt': v:true,
-    \            'staticcheck': v:false,
-    \            'analyses': {'fillstruct': v:true, 'unusedwrite': v:true},
-    \            'codelenses': {'gc_details': v:true, 'test': v:true},
-    \        },
-    \    }
-    \}
+      \    'gopls': {
+      \        'initialization_options': {
+      \            'matcher': 'fuzzy',
+      \            'completeUnimported': v:false,
+      \            'deepCompletion': v:false,
+      \            'usePlaceholders': v:false,
+      \            'symbolMatcher': 'fuzzy',
+      \            'symbolStyle': 'full',
+      \            'gofumpt': v:true,
+      \            'staticcheck': v:false,
+      \            'analyses': {'fillstruct': v:true, 'unusedwrite': v:true},
+      \            'codelenses': {'gc_details': v:true, 'test': v:true},
+      \        },
+      \    }
+      \}
 
 let g:lsp_log_verbose = 1
 let g:lsp_log_file = expand('~/tmp/vim-lsp-'.strftime('%Y%m%d').'.log')
@@ -751,7 +751,7 @@ nnoremap <silent> <Space>ca :<C-u>LspCodeAction<CR>
 "
 let $MYLOCALVIMRC = expand('~/.vim/.local.vimrc')
 if 1 && filereadable($MYLOCALVIMRC)
-    source $MYLOCALVIMRC
+  source $MYLOCALVIMRC
 endif
 "}}}
 "}}}
