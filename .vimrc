@@ -114,7 +114,7 @@ function! InstallPackPlugins() "{{{
         continue
       endif
 
-      echo 'installing: ' . dst
+      echomsg 'installing: ' . dst
       let cmd = printf('git clone --recursive %s %s', url, dst)
       call system(cmd)
       call s:create_helptags(expand(dst . '/doc/'))
@@ -133,7 +133,7 @@ function! UpdateHelpTags() "{{{
         continue
       endif
 
-      echo 'helptags: ' . dst
+      echomsg 'helptags: ' . dst
       call s:create_helptags(expand(dst . '/doc/'))
     endfor
   endfor
@@ -155,16 +155,22 @@ endfunction "}}}
 function! PluginUpdateHandler(timer) "{{{
   let dir = expand($PACKPATH . '/' . 'opt')
   let url = s:plugins.opt[s:pidx]
-  let dst = expand(dir . '/' . split(url, '/')[-1])
+  let plugin_name = split(url, '/')[-1]
+  let dst = expand(dir . '/' . plugin_name)
 
+  let Partial = function('DisplayUpdatedPlugin', [plugin_name])
   let cmd = printf('git -C %s pull --ff --ff-only', dst)
-  call job_start(cmd, {'out_io': 'buffer', 'out_name': '[update plugins]', 'out_modifiable': 0})
+  call job_start(cmd, {'callback': Partial})
 
   let s:pidx += 1
   if s:pidx == len(s:plugins.opt)
     call UpdateHelpTags()
   endif
 endfunction "}}}
+
+function! DisplayUpdatedPlugin(name, channel, msg) abort
+  call appendbufline(bufnr('[update plugins]'), '.', a:name . ': ' . a:msg)
+endfunction
 
 let s:pidx = 0
 function! PackAddHandler(timer) "{{{
