@@ -645,6 +645,10 @@ nnoremap <Leader>d :<C-u>vertical split %:h<CR>
 " Improve replacement of twice the width of characters in linewise.
 xnoremap <expr> r mode() ==# 'V' ? "\<C-v>0o$r" : "r"
 
+" Enable repeatedly increment or decrement in visual mode.
+vnoremap <c-a> <c-a>gv
+vnoremap <c-x> <c-x>gv
+
 " Emacs like key bindings.
 cnoremap <C-a> <Home>
 cnoremap <C-e> <End>
