@@ -671,8 +671,8 @@ nnoremap g* g*zz
 nnoremap g# g#zz
 
 " Move to the position previously changed or yanked.
-nnoremap lc '[
-nnoremap lc ']
+nnoremap mlc '[
+nnoremap mlc ']
 " Select previously changed or yanked.
 nnoremap slc '[v']
 
