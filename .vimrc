@@ -41,7 +41,7 @@ filetype plugin indent on
 # Load Plugins: #{{{
 #
 const PACK_PATH = expand('~/.vim/pack/Bundle')
-final plugins = {'start': [], 'opt': []}
+final plugins: dict<list<string>> = {'start': [], 'opt': []}
 add(plugins.opt, 'https://github.com/vim-jp/vimdoc-ja')
 add(plugins.opt, 'https://github.com/mhinz/vim-signify')
 add(plugins.opt, 'https://github.com/kana/vim-textobj-user')
@@ -171,7 +171,7 @@ def! g:UpdatePackPlugins(): void #{{{
 enddef #}}}
 
 var pidx = 0
-def PackAddHandler(timer: any) #{{{
+def PackAddHandler(timer: number) #{{{
   const plugin_name = split(plugins.opt[pidx], '/')[-1]
 
   const plugin_path = expand(PACK_PATH .. '/opt/' .. plugin_name)
@@ -508,7 +508,7 @@ command! ScriptNames <mods> ModsNew ScriptNames
 #
 # :TCD to the directory of the current file or specified path. #{{{
 command! -nargs=? -complete=dir -bang TCD ChangeCurrentDir('<args>', '<bang>')
-def ChangeCurrentDir(directory: string, bang: any): void
+def ChangeCurrentDir(directory: string, bang: string): void
   if directory == ''
     if &buftype !=# 'terminal'
       tcd %:p:h
