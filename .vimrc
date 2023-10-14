@@ -187,7 +187,7 @@ def PackAddHandler(timer: any) #{{{
     # For vim-lsp.
     lsp#enable()
     # For vim-signify.
-    execute('SignifyEnable')
+    execute 'SignifyEnable'
   endif
 enddef #}}}
 
@@ -630,10 +630,10 @@ g:lsp_settings['gopls']['cmd'] = ['gopls', '-logfile', expand('~/tmp/gopls-' .. 
 # Key Mappings: #{{{
 #
 nnoremap <silent> <Space>ev :<C-u>edit $MYVIMRC<CR>
-nnoremap <silent> <Space>el :<C-u>execute('edit ' .. g:MYLOCALVIMRC)<CR>
+nnoremap <silent> <Space>el :<C-u>execute 'edit ' .. g:MYLOCALVIMRC<CR>
 
 nnoremap <silent> <Space>tv :<C-u>tabedit $MYVIMRC<CR>
-nnoremap <silent> <Space>tl :<C-u>execute('tabedit ' .. g:MYLOCALVIMRC)<CR>
+nnoremap <silent> <Space>tl :<C-u>execute 'tabedit ' .. g:MYLOCALVIMRC<CR>
 
 nnoremap <silent> <Space>rv :<C-u>source $MYVIMRC<CR>
 
@@ -780,7 +780,7 @@ nnoremap <silent> <Space>ca :<C-u>LspCodeAction<CR>
 #
 g:MYLOCALVIMRC = expand('~/.vim/.local.vimrc')
 if 1 && filereadable(g:MYLOCALVIMRC)
-  execute "source " .. g:MYLOCALVIMRC
+  execute 'source ' .. g:MYLOCALVIMRC
 endif
 #}}}
 #}}}
