@@ -368,7 +368,7 @@ def! g:MakeTabLine(): string #{{{
     const hi = n == tabpagenr() ? '%#TabLineSel#' : '%#TabLine#'
     return '%' .. n .. 'T' .. hi .. label .. '%T%#TabLineFill#'
   enddef #}}}
-  const titles: list<string> = map(range(1, tabpagenr('$')), (_, bufnr) => TabpageLabel(bufnr))
+  const titles: list<string> = map(range(1, tabpagenr('$')), (_, bufnr: number) => TabpageLabel(bufnr))
   const sep = ' | '
   const tabpages = join(titles, sep) .. sep .. '%#TabLineFill#%T'
   const current_dir = fnamemodify(getcwd(), '~:') .. ' '
@@ -491,8 +491,8 @@ command! -bar -nargs=? ModsNew <mods> new
   | endif
 command! MRU <mods> ModsNew MRU
   | ToScratchForFiles
-  | setline(1, filter(v:oldfiles, (_, v) => filereadable(expand(v))))
-command! MRUQuickFix setqflist(map(filter(v:oldfiles, (_, v) => filereadable(expand(v))), '{"filename": expand(v:val)}'))
+  | setline(1, filter(v:oldfiles, (_, v: string) => filereadable(expand(v))))
+command! MRUQuickFix setqflist(map(filter(v:oldfiles, (_, v: string) => filereadable(expand(v))), '{"filename": expand(v:val)}'))
   | copen
 command! -nargs=1 -complete=command L <mods> ModsNew <args>
   | ToScratchForFiles
@@ -500,7 +500,7 @@ command! -nargs=1 -complete=command L <mods> ModsNew <args>
 command! Buffers <mods> L buffers
 command! ScriptNames <mods> ModsNew ScriptNames
   | ToScratchForFiles
-  | setline(1, execute('scriptnames')->split('\n')->map((_, v) => split(v, ': ')[1]))
+  | setline(1, execute('scriptnames')->split('\n')->map((_, v: string) => split(v, ': ')[1]))
 #}}}
 
 # ---------------------------------------------------------------------------
