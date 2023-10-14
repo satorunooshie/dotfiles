@@ -12,6 +12,7 @@ augroup END
 # This must be first, because it changes other options as a side effect.
 # Avoid side effects when it was already reset.
 # Using `-u` argument has the side effect that the 'compatible' option will be on by default.
+# If you want to avoid this, use `-N` argument.
 if &compatible
   set nocompatible
 endif
