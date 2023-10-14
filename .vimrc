@@ -630,13 +630,12 @@ g:lsp_settings['gopls']['cmd'] = ['gopls', '-logfile', expand('~/tmp/gopls-' .. 
 # Key Mappings: #{{{
 #
 nnoremap <silent> <Space>ev :<C-u>edit $MYVIMRC<CR>
-nnoremap <silent> <Space>el :<C-u>edit MYLOCALVIMRC<CR>
+nnoremap <silent> <Space>el :<C-u>execute('edit ' .. g:MYLOCALVIMRC)<CR>
 
 nnoremap <silent> <Space>tv :<C-u>tabedit $MYVIMRC<CR>
-nnoremap <silent> <Space>tl :<C-u>tabedit MYLOCALVIMRC<CR>
+nnoremap <silent> <Space>tl :<C-u>execute('tabedit ' .. g:MYLOCALVIMRC)<CR>
 
 nnoremap <silent> <Space>rv :<C-u>source $MYVIMRC<CR>
-nnoremap <silent> <Space>rl :<C-u>if 1 && filereadable(MYLOCALVIMRC) \| source MYLOCALVIMRC \| endif <CR>
 
 # Recommended by :help options.txt for indenting
 # When typing '#' as the first character in a new line, the indent for
@@ -779,9 +778,9 @@ nnoremap <silent> <Space>ca :<C-u>LspCodeAction<CR>
 # ---------------------------------------------------------------------------
 # External Settings: #{{{
 #
-const MYLOCALVIMRC = expand('~/.vim/.local.vimrc')
-if 1 && filereadable(MYLOCALVIMRC)
-  execute "source " .. MYLOCALVIMRC
+g:MYLOCALVIMRC = expand('~/.vim/.local.vimrc')
+if 1 && filereadable(g:MYLOCALVIMRC)
+  execute "source " .. g:MYLOCALVIMRC
 endif
 #}}}
 #}}}
