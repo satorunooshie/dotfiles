@@ -290,7 +290,7 @@ endif
 
 # Visualization of the spaces at the end of the line. #{{{
 # https://vim-jp.org/vim-users-jp/2009/07/12/Hack-40.html
-augroup highlightIdegraphicSpace
+augroup HighlightIdegraphicSpace
   autocmd!
   autocmd Colorscheme * highlight IdeographicSpace term=underline ctermbg=45 guibg=Blue
   autocmd VimEnter,WinEnter * match IdeographicSpace /　\|\s\+$/
@@ -458,7 +458,7 @@ def SetSimpleStatusLine(): void #{{{
 enddef #}}}
 
 augroup StatusLine #{{{
-  autocmd! StatusLine
+  autocmd!
   autocmd BufEnter * SetFullStatusLine()
   autocmd BufLeave,BufNew,BufRead,BufNewFile * SetFullStatusLine()
   # autocmd BufLeave,BufNew,BufRead,BufNewFile * SetSimpleStatusLine()
@@ -524,22 +524,17 @@ enddef
 #}}}
 
 # Restore cursor position automatically. #{{{
-autocmd BufReadPost * RestoreCursorPosition()
 def RestoreCursorPosition(): void
   if line("'\"") > 1 && line("'\"") <= line("$")
     execute "normal! g`\""
   endif
 enddef
+autocmd BufReadPost * RestoreCursorPosition()
 #}}}
 
 autocmd FileType proto setlocal shiftwidth=2 tabstop=2 makeprg=buf
 
 # Sanitize the command line history. #{{{
-augroup sanitizeHistory
-  autocmd!
-  autocmd ModeChanged c:* SanitizeHistory()
-augroup END
-
 def SanitizeHistory(): void
   var cmd = histget(":", -1)
   if cmd == "x" || cmd == "xa" || cmd == "e!" ||
@@ -547,6 +542,10 @@ def SanitizeHistory(): void
     histdel(":", -1)
   endif
 enddef
+augroup SanitizeHistory
+  autocmd!
+  autocmd ModeChanged c:* SanitizeHistory()
+augroup END
 #}}}
 #}}}
 
@@ -585,7 +584,7 @@ def LspBufferEnabled(): void
   setlocal tagfunc=lsp#tagfunc
 enddef
 
-augroup lsp_install
+augroup LspInstall
   autocmd!
   autocmd User lsp_buffer_enabled LspBufferEnabled()
 augroup END
@@ -595,7 +594,10 @@ def GoFormatAndOrganizeImports(): void
   LspDocumentFormatSync
   LspCodeActionSync source.organizeImports
 enddef
-autocmd! BufWritePre *.go GoFormatAndOrganizeImports()
+augroup GoFormat
+  autocmd!
+  autocmd BufWritePre *.go GoFormatAndOrganizeImports()
+augroup END
 
 g:lsp_settings = {
   gopls: {
