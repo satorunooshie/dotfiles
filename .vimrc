@@ -591,11 +591,11 @@ augroup lsp_install
 augroup END
 
 # Format and organize imports on save.
-autocmd! BufWritePre *.go GoFormatAndOrganizeImports
 def GoFormatAndOrganizeImports(): void
   LspDocumentFormatSync
   LspCodeActionSync source.organizeImports
 enddef
+autocmd! BufWritePre *.go GoFormatAndOrganizeImports()
 
 g:lsp_settings = {
   gopls: {
