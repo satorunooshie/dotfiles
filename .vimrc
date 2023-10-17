@@ -529,10 +529,10 @@ def RestoreCursorPosition(): void
     execute "normal! g`\""
   endif
 enddef
-autocmd BufReadPost * RestoreCursorPosition()
+autocmd MyVimrcCmd BufReadPost * RestoreCursorPosition()
 #}}}
 
-autocmd FileType proto setlocal shiftwidth=2 tabstop=2 makeprg=buf
+autocmd MyVimrcCmd FileType proto setlocal shiftwidth=2 tabstop=2 makeprg=buf
 
 # Sanitize the command line history. #{{{
 def SanitizeHistory(): void
@@ -542,10 +542,7 @@ def SanitizeHistory(): void
     histdel(":", -1)
   endif
 enddef
-augroup SanitizeHistory
-  autocmd!
-  autocmd ModeChanged c:* SanitizeHistory()
-augroup END
+autocmd MyVimrcCmd ModeChanged c:* SanitizeHistory()
 #}}}
 #}}}
 
@@ -576,6 +573,7 @@ g:vimhelpgenerator_defaultlanguage = 'en'
 #
 g:lsp_fold_enabled = 0
 g:lsp_diagnostics_echo_cursor = 1
+g:lsp_diagnostics_virtual_text_enabled = 0
 g:goimports_simplify = 1
 g:lsp_tagfunc_source_methods = ['definition']
 
@@ -591,13 +589,10 @@ augroup END
 
 # Format and organize imports on save.
 def GoFormatAndOrganizeImports(): void
-  LspDocumentFormatSync
-  LspCodeActionSync source.organizeImports
+  silent LspDocumentFormatSync
+  silent LspCodeActionSync source.organizeImports
 enddef
-augroup GoFormat
-  autocmd!
-  autocmd BufWritePre *.go GoFormatAndOrganizeImports()
-augroup END
+autocmd MyVimrcCmd BufWritePre *.go GoFormatAndOrganizeImports()
 
 g:lsp_settings = {
   gopls: {
