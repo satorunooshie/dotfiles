@@ -300,7 +300,7 @@ augroup END
 #}}}
 
 # github.com/satorunooshie/pairscolorscheme
-colorscheme Pairs
+colorscheme pairs
 #}}}
 
 # ---------------------------------------------------------------------------
