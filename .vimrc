@@ -364,7 +364,7 @@ def! g:MakeTabLine(): string #{{{
       return getbufvar(bufnr, '&modified') ? '+' : ''
     enddef #}}}
     const bufnrs: list<number> = tabpagebuflist(n)
-    const buflist = join(map(copy(bufnrs), (_, bufnr: number) => bufnr .. IsModified(bufnr)), ',')
+    const buflist = join(mapnew(bufnrs, (_, bufnr: number) => bufnr .. IsModified(bufnr)), ',')
     const curbufnr: number = bufnrs[tabpagewinnr(n) - 1]
     const label = '[' .. buflist .. ']' .. pathshorten(bufname(curbufnr))
     const hi = n == tabpagenr() ? '%#TabLineSel#' : '%#TabLine#'
