@@ -220,6 +220,8 @@ set clipboard=unnamed,unnamedplus
 set tabstop=2
 set softtabstop=2
 set shiftwidth=2
+# Round indent to multiple of 'shiftwidth'.
+set shiftround
 set smarttab
 # Spaces are used in indents.
 set expandtab
