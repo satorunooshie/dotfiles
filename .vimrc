@@ -119,13 +119,15 @@ def! g:InstallPackPlugins(): void #{{{
 enddef #}}}
 
 def! g:UpdatePackPlugins(): void #{{{
-  var prevbuf = bufnr('[update plugins]')
+  # Needs escape not to use file-pattern.
+  var prevbuf: number = bufnr('\[update plugins]\')
   if prevbuf != -1
     # Needs `:` before Ex command with range.
     execute ':' .. prevbuf .. 'bwipeout!'
   endif
-  topleft split
-  edit `='[update plugins]'`
+  var nr: number = bufadd('[update plugins]')
+  bufload(nr)
+  execute ':' .. nr .. 'sb'
   setlocal buftype=nofile
 
   def PluginUpdateHandler(timer: any): void #{{{
@@ -135,7 +137,7 @@ def! g:UpdatePackPlugins(): void #{{{
     const dst = expand(plugin_dir .. '/' .. plugin_name)
 
     def DisplayUpdatedPlugin(name: string, channel: channel, msg: string): void
-      appendbufline(bufnr('[update plugins]'), 0, name .. ': ' .. msg)
+      appendbufline(nr, 0, name .. ': ' .. msg)
     enddef
 
     job_start(
