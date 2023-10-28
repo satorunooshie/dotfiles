@@ -530,7 +530,7 @@ enddef
 # Restore cursor position automatically. #{{{
 def RestoreCursorPosition(): void
   if line("'\"") > 1 && line("'\"") <= line("$")
-    execute "normal! g`\""
+    normal! g`"
   endif
 enddef
 autocmd MyVimrcCmd BufReadPost * RestoreCursorPosition()
