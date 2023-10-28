@@ -518,7 +518,7 @@ def ChangeCurrentDir(directory: string, bang: string): void
       tcd %:p:h
     endif
   else
-    execute 'tcd' .. directory
+    execute 'tcd ' .. directory
   endif
 
   if bang == ''
