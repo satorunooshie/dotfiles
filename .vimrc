@@ -40,7 +40,7 @@ filetype plugin indent on
 # ---------------------------------------------------------------------------
 # Load Plugins: #{{{
 #
-const PACK_PATH = expand('~/.vim/pack/Bundle')
+$PACKPATH = expand('~/.vim/pack/Bundle')
 final plugins: dict<list<string>> = {'start': [], 'opt': []}
 add(plugins.opt, 'https://github.com/vim-jp/vimdoc-ja')
 add(plugins.opt, 'https://github.com/mhinz/vim-signify')
@@ -101,7 +101,7 @@ def! g:InstallPackPlugins(): void #{{{
   enddef
 
   for key in keys(plugins)
-    const dir = expand(PACK_PATH .. '/' .. key)
+    const dir = expand($PACKPATH .. '/' .. key)
     MkdirIfNotExists(dir)
 
     for url in plugins[key]
@@ -131,7 +131,7 @@ def! g:UpdatePackPlugins(): void #{{{
   setlocal buftype=nofile
 
   def PluginUpdateHandler(timer: any): void #{{{
-    const plugin_dir = expand(PACK_PATH .. '/' .. 'opt')
+    const plugin_dir = expand($PACKPATH .. '/' .. 'opt')
     const plugin_url = plugins.opt[pidx]
     const plugin_name = split(plugin_url, '/')[-1]
     const dst = expand(plugin_dir .. '/' .. plugin_name)
@@ -147,7 +147,7 @@ def! g:UpdatePackPlugins(): void #{{{
 
     def UpdateHelpTags(): void #{{{
       for key in keys(plugins)
-        var dir = expand(PACK_PATH .. '/' .. key)
+        var dir = expand($PACKPATH .. '/' .. key)
 
         for url in plugins[key]
           const path = expand(dir .. '/' .. split(url, '/')[-1])
@@ -176,7 +176,7 @@ var pidx = 0
 def PackAddHandler(timer: number) #{{{
   const plugin_name = split(plugins.opt[pidx], '/')[-1]
 
-  const plugin_path = expand(PACK_PATH .. '/opt/' .. plugin_name)
+  const plugin_path = expand($PACKPATH .. '/opt/' .. plugin_name)
   if isdirectory(plugin_path)
     execute 'packadd ' .. plugin_name
   endif
@@ -631,10 +631,10 @@ g:lsp_settings['gopls']['cmd'] = ['gopls', '-logfile', expand('~/tmp/gopls-' .. 
 # Key Mappings: #{{{
 #
 nnoremap <silent> <Space>ev :<C-u>edit $MYVIMRC<CR>
-nnoremap <silent> <Space>el :<C-u>execute 'edit ' .. g:MYLOCALVIMRC<CR>
+nnoremap <silent> <Space>el :<C-u>edit $MYLOCALVIMRC<CR>
 
 nnoremap <silent> <Space>tv :<C-u>tabedit $MYVIMRC<CR>
-nnoremap <silent> <Space>tl :<C-u>execute 'tabedit ' .. g:MYLOCALVIMRC<CR>
+nnoremap <silent> <Space>tl :<C-u>tabedit $MYLOCALVIMRC<CR>
 
 nnoremap <silent> <Space>rv :<C-u>source $MYVIMRC<CR>
 
@@ -779,9 +779,9 @@ nnoremap <silent> <Space>ca :<C-u>LspCodeAction<CR>
 # ---------------------------------------------------------------------------
 # External Settings: #{{{
 #
-g:MYLOCALVIMRC = expand('~/.vim/.local.vimrc')
-if 1 && filereadable(g:MYLOCALVIMRC)
-  execute 'source ' .. g:MYLOCALVIMRC
+$MYLOCALVIMRC = expand('~/.vim/.local.vimrc')
+if 1 && filereadable($MYLOCALVIMRC)
+  source $MYLOCALVIMRC
 endif
 #}}}
 #}}}
