@@ -35,16 +35,15 @@ syntax on
 set viminfo=<1000,h,s100,'10000,:100000
 set rtp+=/opt/homebrew/opt/fzf
 
-filetype plugin indent on
-
 # ---------------------------------------------------------------------------
 # Load Plugins: #{{{
 #
 $PACKPATH = expand('~/.vim/pack/Bundle')
 final plugins: dict<list<string>> = {'start': [], 'opt': []}
+add(plugins.start, 'https://github.com/kana/vim-textobj-user')
+add(plugins.start, 'https://github.com/kana/vim-operator-user')
 add(plugins.opt, 'https://github.com/vim-jp/vimdoc-ja')
 add(plugins.opt, 'https://github.com/mhinz/vim-signify')
-add(plugins.opt, 'https://github.com/kana/vim-textobj-user')
 add(plugins.opt, 'https://github.com/kana/vim-textobj-indent')
 add(plugins.opt, 'https://github.com/kana/vim-textobj-syntax')
 add(plugins.opt, 'https://github.com/kana/vim-textobj-line')
@@ -52,9 +51,9 @@ add(plugins.opt, 'https://github.com/kana/vim-textobj-fold')
 add(plugins.opt, 'https://github.com/kana/vim-textobj-entire')
 add(plugins.opt, 'https://github.com/thinca/vim-textobj-between')
 add(plugins.opt, 'https://github.com/thinca/vim-textobj-comment')
+add(plugins.opt, 'https://github.com/github/copilot.vim')
 add(plugins.opt, 'https://github.com/h1mesuke/textobj-wiw')
 add(plugins.opt, 'https://github.com/sgur/vim-textobj-parameter')
-add(plugins.opt, 'https://github.com/kana/vim-operator-user')
 add(plugins.opt, 'https://github.com/kana/vim-operator-replace')
 add(plugins.opt, 'https://github.com/thinca/vim-qfreplace')
 add(plugins.opt, 'https://github.com/mattn/vim-maketable')
@@ -63,8 +62,6 @@ add(plugins.opt, 'https://github.com/mattn/vim-maketable')
 add(plugins.opt, 'https://github.com/markonm/traces.vim')
 # Highlight each by a different color.
 add(plugins.opt, 'https://github.com/daisuzu/rainbowcyclone.vim')
-# Extended % matching.
-add(plugins.opt, 'https://github.com/vim-scripts/matchit.zip')
 add(plugins.opt, 'https://github.com/tpope/vim-surround')
 # An extensible & universal comment vim-plugin that also handles embedded filetypes.
 # ex) gcc.
@@ -93,14 +90,15 @@ def CreateHelpTags(path: string): void
   endif
 enddef
 
-def! g:InstallPackPlugins(): void #{{{
-  def MkdirIfNotExists(path: string): void
-    if !isdirectory(path)
-      mkdir(path, 'p')
-    endif
-  enddef
+def MkdirIfNotExists(path: string): void
+  if !isdirectory(path)
+    mkdir(path, 'p')
+  endif
+enddef
 
-  for key in keys(plugins)
+def! g:InstallPackPlugins(): void #{{{
+  # loop from `start` avoid dependency problems.
+  for key in reverse(sort(keys(plugins)))
     const dir = expand($PACKPATH .. '/' .. key)
     MkdirIfNotExists(dir)
 
@@ -111,7 +109,7 @@ def! g:InstallPackPlugins(): void #{{{
         continue
       endif
 
-      echowindo 'installing: ' .. dst
+      echomsg 'installing: ' .. dst
       system('git clone --recursive ' .. url .. ' ' .. dst)
       CreateHelpTags(expand(dst .. '/doc/'))
     endfor
@@ -184,20 +182,37 @@ def PackAddHandler(timer: number) #{{{
   ++pidx
   if pidx == len(plugins.opt)
     packadd cfilter
+    # Extended % matching.
+    packadd matchit
     # For filetype plugin.
     doautocmd FileType
-    # For vim-lsp.
-    lsp#enable()
-    # For vim-signify.
-    execute 'SignifyEnable'
+
+    try # For vim-lsp.
+      lsp#enable()
+    catch /E117/
+    endtry
+
+    try # For vim-signify.
+      execute 'SignifyEnable'
+    catch /E492/
+    endtry
   endif
 enddef #}}}
 
 if has('vim_starting') && has('timers')
-  packadd vim-textobj-user
-  packadd vim-operator-user
+  for url in plugins.start
+    const plugin_name = split(url, '/')[-1]
+    const path = expand($PACKPATH .. '/start/' .. plugin_name)
+    if !isdirectory(path)
+      continue
+    endif
+    execute 'packadd ' .. plugin_name
+  endfor
   autocmd MyVimrcCmd VimEnter * timer_start(1, PackAddHandler, {'repeat': len(plugins.opt)})
 endif
+
+# For ftdetect scripts to be loaded, need to write AFTER all `packadd!` commands.
+filetype plugin indent on
 #}}}
 
 # ---------------------------------------------------------------------------
