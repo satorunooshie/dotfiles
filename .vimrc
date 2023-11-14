@@ -232,6 +232,8 @@ set noswapfile
 set nobackup
 # The maximum number of items to show in the popup menu for Insert mode completion.
 set pumheight=15
+# Display the completion matches using the popup menu.
+set wildoptions=pum
 # Register '*' and '+' for all yank, delete, change and put operations.
 set clipboard=unnamed,unnamedplus
 set tabstop=2
