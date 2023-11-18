@@ -647,13 +647,13 @@ g:lsp_settings['gopls']['cmd'] = ['gopls', '-logfile', expand('~/tmp/gopls-' .. 
 # ---------------------------------------------------------------------------
 # Key Mappings: #{{{
 #
-nnoremap <silent> <Space>ev :<C-u>edit $MYVIMRC<CR>
-nnoremap <silent> <Space>el :<C-u>edit $MYLOCALVIMRC<CR>
+nnoremap <silent> <Space>ev <Cmd>edit $MYVIMRC<CR>
+nnoremap <silent> <Space>el <Cmd>edit $MYLOCALVIMRC<CR>
 
-nnoremap <silent> <Space>tv :<C-u>tabedit $MYVIMRC<CR>
-nnoremap <silent> <Space>tl :<C-u>tabedit $MYLOCALVIMRC<CR>
+nnoremap <silent> <Space>tv <Cmd>tabedit $MYVIMRC<CR>
+nnoremap <silent> <Space>tl <Cmd>tabedit $MYLOCALVIMRC<CR>
 
-nnoremap <silent> <Space>rv :<C-u>source $MYVIMRC<CR>
+nnoremap <silent> <Space>rv <Cmd>source $MYVIMRC<CR>
 
 # Recommended by :help options.txt for indenting
 # When typing '#' as the first character in a new line, the indent for
@@ -663,25 +663,25 @@ nnoremap <silent> <Space>rv :<C-u>source $MYVIMRC<CR>
 # When using the ">>" command, lines starting with '#' are not shifted
 # right.
 inoremap \# X<C-H><C-V>#
-nnoremap <silent> <Space>cl :<C-u>call popup_clear()<CR>
-nnoremap <silent> <Space>hc :<C-u>helpclose<CR>
-nnoremap <silent> <C-j> :<C-u>bprev<CR>
-nnoremap <silent> <C-k> :<C-u>bnext<CR>
-nnoremap <silent> <C-h> :<C-u>tabprev<CR>
-nnoremap <silent> <C-l> :<C-u>tabnext<CR>
+nnoremap <silent> <Space>cl <Cmd>call popup_clear()<CR>
+nnoremap <silent> <Space>hc <Cmd>helpclose<CR>
+nnoremap <silent> <C-j> <Cmd>bprev<CR>
+nnoremap <silent> <C-k> <Cmd>bnext<CR>
+nnoremap <silent> <C-h> <Cmd>tabprev<CR>
+nnoremap <silent> <C-l> <Cmd>tabnext<CR>
 
-nnoremap <Space>op :<C-u>set paste! paste?<CR>
-nnoremap <Space>on :<C-u>setlocal number! cursorline! number? cursorline?<CR>
-nnoremap <Space>ol :<C-u>setlocal list! list?<CR>
+nnoremap <Space>op <Cmd>set paste! paste?<CR>
+nnoremap <Space>on <Cmd>setlocal number! cursorline! number? cursorline?<CR>
+nnoremap <Space>ol <Cmd>setlocal list! list?<CR>
 nnoremap <ESC><ESC> :nohlsearch<CR>
 
-nnoremap <silent> <Space>wd :<C-u>windo diffthis<CR>
+nnoremap <silent> <Space>wd <Cmd>windo diffthis<CR>
 # Browse oldfiles filtered by pattern.
 nnoremap <Leader>e :<C-u>/ oldfiles<Home>browse filter /
 nnoremap <Space>b :<C-u>buffer <C-d>
 nnoremap <Space>vb :<C-u>vert buffer <C-d>
 # Open the directory of the current file.
-nnoremap <Leader>d :<C-u>vertical split %:h<CR>
+nnoremap <Leader>d <Cmd>vertical split %:h<CR>
 # Improve replacement of twice the width of characters in linewise.
 xnoremap <expr> r mode() ==# 'V' ? "\<C-v>0o$r" : "r"
 
@@ -754,11 +754,11 @@ xnoremap iu i]
 # Custom commands: #{{{
 #
 # :TCD to the directory of the current file or specified path.
-nnoremap <silent> <Space>cd :<C-u>TCD<CR>
+nnoremap <silent> <Space>cd <Cmd>TCD<CR>
 # Copy current path.
-nnoremap <silent> <Space>cp :<C-u>!echo % \| pbcopy<CR>
+nnoremap <silent> <Space>cp <Cmd>!echo % \| pbcopy<CR>
 # Format json.
-nnoremap <silent> <Space>jq :<C-u>%!jq '.'<CR>
+nnoremap <silent> <Space>jq <Cmd>%!jq '.'<CR>
 # Force save.
 cmap w!! w !sudo tee > /dev/null %
 #}}}
@@ -780,16 +780,16 @@ nmap c# <Plug>(rc_search_backward_with_cursor)
 nmap cn <Plug>(rc_search_forward_with_last_pattern)
 nmap cN <Plug>(rc_search_backward_with_last_pattern)
 # nmap <Esc><Esc> <Plug>(rc_reset):nohlsearch<CR>
-# nnoremap <Esc><Esc> :<C-u>RCReset<CR>:nohlsearch<CR>
+# nnoremap <Esc><Esc> <Cmd>RCReset<CR>:nohlsearch<CR>
 #}}}
 
 # vim-lsp: #{{{
-nnoremap <silent> <Space>rf :<C-u>LspReferences<CR>
-nnoremap <silent> <Space>rn :<C-u>LspRename<CR>
-nnoremap <silent> <Space>im :<C-u>LspImplementation<CR>
-nnoremap <silent> <Space>ho :<C-u>LspHover<CR>
-nnoremap <silent> <Space>ds :<C-u>LspDocumentSymbol<CR>
-nnoremap <silent> <Space>ca :<C-u>LspCodeAction<CR>
+nnoremap <silent> <Space>rf <Cmd>LspReferences<CR>
+nnoremap <silent> <Space>rn <Cmd>LspRename<CR>
+nnoremap <silent> <Space>im <Cmd>LspImplementation<CR>
+nnoremap <silent> <Space>ho <Cmd>LspHover<CR>
+nnoremap <silent> <Space>ds <Cmd>LspDocumentSymbol<CR>
+nnoremap <silent> <Space>ca <Cmd>LspCodeAction<CR>
 #}}}
 #}}}
 
