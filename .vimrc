@@ -665,8 +665,8 @@ nnoremap <silent> <Space>rv <Cmd>source $MYVIMRC<CR>
 inoremap \# X<C-H><C-V>#
 nnoremap <silent> <Space>cl <Cmd>call popup_clear()<CR>
 nnoremap <silent> <Space>hc <Cmd>helpclose<CR>
-nnoremap <silent> <C-j> <Cmd>bprev<CR>
-nnoremap <silent> <C-k> <Cmd>bnext<CR>
+nnoremap <silent> <C-j> <Cmd>bnext<CR>
+nnoremap <silent> <C-k> <Cmd>bprev<CR>
 nnoremap <silent> <C-h> <Cmd>tabprev<CR>
 nnoremap <silent> <C-l> <Cmd>tabnext<CR>
 
