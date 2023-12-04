@@ -546,7 +546,8 @@ enddef
 
 # Restore cursor position automatically. #{{{
 def RestoreCursorPosition(): void
-  if line("'\"") > 1 && line("'\"") <= line("$")
+  if line("'\"") > 1 && line("'\"") <= line("$") &&
+      &filetype !~# 'commit' && index(['xxd', 'gitrebase'], &filetype) == -1
     normal! g`"
   endif
 enddef
