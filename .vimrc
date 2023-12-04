@@ -572,6 +572,18 @@ autocmd MyVimrcCmd ModeChanged c:* SanitizeHistory()
 # Plugins: #{{{
 #
 # ---------------------------------------------------------------------------
+# termdebug: #{{{
+#
+if !exists('g:termdebug_config')
+  g:termdebug_config = {}
+endif
+
+g:termdebug_config['winbar'] = 0
+g:termdebug_config['popup'] = 0
+g:termdebug_config['sign'] = '>>'
+#}}}
+
+# ---------------------------------------------------------------------------
 # vim-quickrun: #{{{
 #
 if !exists('g:quickrun_config')
