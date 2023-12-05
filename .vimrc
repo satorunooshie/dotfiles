@@ -285,13 +285,14 @@ set tags+=./**/tags
 #}}}
 
 # grep: #{{{
-set grepprg=git\ grep\ --no-color\ -n\ --column\ --untracked\ --full-name
+set grepprg=git\ grep\ --no-color\ -n\ --column\ --untracked
 # Cannot be used --no-index and --untracked at the same time.
 # --no-index: for not using git repository.
-command! UseGitGrepNoIndex set grepprg=git\ grep\ --no-color\ -n\ --column\ --no-index\ --full-name
-command! UseDefaultGitGrep set grepprg=git\ grep\ --no-color\ -n\ --column\ --untracked\ --full-name
+command! UseGitGrepNoIndex set grepprg=git\ grep\ --no-color\ -n\ --column\ --no-index
+command! UseDefaultGitGrep set grepprg=git\ grep\ --no-color\ -n\ --column\ --untracked
+#}}}
 
-# Open quickfix window automatically.
+# Open quickfix window automatically. #{{{
 autocmd MyVimrcCmd QuickfixCmdPre make,grep,grepadd,vimgrep,vimgrepadd,helpgrep copen
 #}}}
 
