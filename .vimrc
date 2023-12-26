@@ -126,7 +126,7 @@ def! g:UpdatePackPlugins(): void #{{{
   var nr: number = bufadd('[update plugins]')
   bufload(nr)
   execute ':' .. nr .. 'sb'
-  setlocal buftype=nofile
+  ToScratch
 
   def PluginUpdateHandler(timer: any): void #{{{
     const plugin_dir = expand($PACKPATH .. '/' .. 'opt')
@@ -501,6 +501,13 @@ set hlsearch
 # ---------------------------------------------------------------------------
 # Files: #{{{
 #
+var git_root = ''
+command! -bar SetGitRoot git_root = system('git rev-parse --show-toplevel')
+  | if git_root =~# '^fatal'
+  | git_root = ''
+  | else
+  | git_root = git_root->trim()->expand()
+  | endif
 var files_cmd = 'find '
 var files_opts = '-type f'
 command! -bar ToScratch setlocal buftype=nofile bufhidden=hide noswapfile
@@ -512,10 +519,10 @@ command! -bar -nargs=? ModsNew <mods> new
   | edit [<args>]
   | endif
 command! MRU <mods> ModsNew MRU
+  | SetGitRoot
   | ToScratchForFiles
-  | setline(1, filter(v:oldfiles, (_, v: string) => filereadable(expand(v))))
-command! MRUQuickFix setqflist(map(filter(v:oldfiles, (_, v: string) => filereadable(expand(v))), '{"filename": expand(v:val)}'))
-  | copen
+  | setline(1, v:oldfiles->filter((_, v: string) => filereadable(expand(v)))->mapnew((_, v: string) => v->trim()->expand()->substitute(expand('$HOME'), '~', ''))->filter((_, v: string) => (empty(git_root) || expand(v) =~# git_root) && v !~# '\.git/'))
+#command! MRUQuickfix setqflist(map(filter(v:oldfiles, (_, v: string) => filereadable(expand(v))), '{"filename": expand(v:val), "efm": "%f"}')) | copen
 command! -nargs=1 -complete=command L <mods> ModsNew <args>
   | ToScratchForFiles
   | setline(1, split(execute(<q-args>), '\n'))
