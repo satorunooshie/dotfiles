@@ -374,6 +374,7 @@ set nolist
 set listchars=tab:>-,extends:<,precedes:>,trail:-,eol:$,nbsp:%
 
 # Tabline settings. #{{{
+g:current_dir = fnamemodify(getcwd(), ':p:~:h') .. ' '
 def! g:MakeTabLine(): string #{{{
   def TabpageLabel(n: number): string #{{{
     const title = gettabwinvar(n, 0, 'title')
@@ -393,8 +394,8 @@ def! g:MakeTabLine(): string #{{{
   const titles: list<string> = map(range(1, tabpagenr('$')), (_, bufnr: number) => TabpageLabel(bufnr))
   const sep = ' | '
   const tabpages = join(titles, sep) .. sep .. '%#TabLineFill#%T'
-  const current_dir = fnamemodify(getcwd(), '~:') .. ' '
-  return tabpages .. '%=' .. current_dir
+  g:current_dir = fnamemodify(getcwd(), ':p:~:h') .. ' '
+  return tabpages .. '%=' .. g:current_dir
 enddef #}}}
 
 set tabline=%!MakeTabLine()
@@ -502,11 +503,15 @@ set hlsearch
 # Files: #{{{
 #
 var git_root = ''
-command! -bar SetGitRoot git_root = system('git rev-parse --show-toplevel')
+var git_root_cache = ''
+command! -bar SetGitRoot if g:current_dir !=# git_root_cache
+  | git_root_cache = g:current_dir
+  | git_root = system('git rev-parse --show-toplevel')
   | if git_root =~# '^fatal'
   | git_root = ''
   | else
   | git_root = git_root->trim()->expand()
+  | endif
   | endif
 var files_cmd = 'find '
 var files_opts = '-type f'
