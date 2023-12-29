@@ -518,9 +518,7 @@ var files_opts = '-type f'
 command! -bar ToScratch setlocal buftype=nofile bufhidden=hide noswapfile
 command! -bar ToScratchForFiles ToScratch | setlocal iskeyword+=.
 command! -bar -nargs=? ModsNew <mods> new
-  | if <q-args> ==# 'Files:.'
-  | edit `='[Files:' . fnamemodify(getcwd(), ':p:h') . ']'`
-  | elseif len(<q-args>) > 0
+  | if len(<q-args>) > 0
   | edit [<args>]
   | endif
 command! MRU <mods> ModsNew MRU
