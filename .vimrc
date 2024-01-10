@@ -653,20 +653,20 @@ g:lsp_settings = {
   gopls: {
     initialization_options: {
       matcher: 'fuzzy',
-      completeUnimported: v:false,
-      deepCompletion: v:false,
-      usePlaceholders: v:false,
+      completeUnimported: false,
+      deepCompletion: false,
+      usePlaceholders: false,
       symbolMatcher: 'fuzzy',
       symbolStyle: 'full',
-      gofumpt: v:true,
-      staticcheck: v:false,
+      gofumpt: true,
+      staticcheck: false,
       analyses: {
-        fillstruct: v:true,
-        unusedwrite: v:true,
+        fillstruct: true,
+        unusedwrite: true,
       },
       codelenses: {
-        gc_details: v:true,
-        test: v:true,
+        gc_details: true,
+        test: true,
       },
     },
   }
