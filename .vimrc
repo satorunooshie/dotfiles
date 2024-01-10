@@ -614,6 +614,16 @@ g:vimhelpgenerator_defaultlanguage = 'en'
 #}}}
 
 # ---------------------------------------------------------------------------
+# copilot: #{{{
+#
+g:copilot_filetypes = {
+  'gitcommit': true,
+  'markdown': true,
+  'yaml': true,
+}
+#}}}
+
+# ---------------------------------------------------------------------------
 # vim-lsp: #{{{
 #
 g:lsp_fold_enabled = 0
