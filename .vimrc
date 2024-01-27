@@ -314,7 +314,7 @@ endif
 # https://vim-jp.org/vim-users-jp/2009/07/12/Hack-40.html
 augroup HighlightIdegraphicSpace
   autocmd!
-  autocmd Colorscheme * highlight IdeographicSpace term=underline ctermbg=45 guibg=Blue
+  autocmd Colorscheme * highlight IdeographicSpace term=underline ctermbg=102 guibg=grey
   autocmd VimEnter,WinEnter * match IdeographicSpace /　\|\s\+$/
 augroup END
 #}}}
