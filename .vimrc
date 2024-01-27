@@ -577,6 +577,10 @@ def SanitizeHistory(): void
 enddef
 autocmd MyVimrcCmd ModeChanged c:* SanitizeHistory()
 #}}}
+
+# Diff before save. #{{{
+command! DiffOrig vert new | set bt=nofile | execute 'r ++edit ' .. expand('#') | deletebufline('%', 1) | diffthis | wincmd p | diffthis
+#}}}
 #}}}
 
 # ---------------------------------------------------------------------------
