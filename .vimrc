@@ -723,6 +723,10 @@ xnoremap <expr> r mode() ==# 'V' ? "\<C-v>0o$r" : "r"
 vnoremap <c-a> <c-a>gv
 vnoremap <c-x> <c-x>gv
 
+# Disable overridding the register when pasting in visual mode.
+vnoremap p "_dP
+vnoremap P "_dp
+
 # Emacs like key bindings.
 cnoremap <C-a> <Home>
 cnoremap <C-e> <End>
