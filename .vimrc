@@ -332,6 +332,9 @@ g:netrw_winsize = 30
 g:netrw_preview = 1
 # Hide swap files.
 g:netrw_list_hide = '^.*.swp'
+g:netrw_banner = 1
+g:netrw_use_errorwindow = 0
+g:netrw_localmkdiropt = ' -a'
 #}}}
 
 # ---------------------------------------------------------------------------
