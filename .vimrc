@@ -800,7 +800,7 @@ xnoremap iu i]
 # :TCD to the directory of the current file or specified path.
 nnoremap <silent> <Space>cd <Cmd>TCD<CR>
 # Copy current path.
-nnoremap <silent> <Space>cp <Cmd>!echo % \| pbcopy<CR>
+nnoremap <silent> <Space>cp <Cmd>!echo % \| pbcopy<CR><CR>
 # Format json.
 nnoremap <silent> <Space>jq <Cmd>%!jq '.'<CR>
 # Force save.
