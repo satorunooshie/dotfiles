@@ -335,6 +335,18 @@ g:netrw_list_hide = '^.*.swp'
 g:netrw_banner = 1
 g:netrw_use_errorwindow = 0
 g:netrw_localmkdiropt = ' -a'
+
+def NetrwRemap(): void
+    # Remove all under the cursor.
+    nnoremap <buffer> D :<C-u>!rm -rf %:p:h/<C-r><C-w><CR><CR>
+    # Copy all files in the directory under the cursor to anywhere.
+    nnoremap <buffer> CP :<C-u>!cp -a %:p:h/<C-r><C-w>/* %:p:h/<C-d>
+    # Move the file under the cursor to anywhere.
+    nnoremap <buffer> MV :<C-u>!mv %:p:h/<C-r><C-w> %:p:h/<C-d>
+    # Overwrite <C-l>.
+    nnoremap <buffer> <C-l> <Cmd>tabnext<CR>
+enddef
+autocmd MyVimrcCmd FileType netrw call NetrwRemap()
 #}}}
 
 # ---------------------------------------------------------------------------
