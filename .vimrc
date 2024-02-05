@@ -338,11 +338,11 @@ g:netrw_localmkdiropt = ' -a'
 
 def NetrwRemap(): void
     # Remove all under the cursor.
-    nnoremap <buffer> D :<C-u>!rm -rf %:p:h/<C-r><C-w><CR><CR>
+    nnoremap <buffer> D :<C-u>!rm -rf %:p:h/<C-r><C-f><CR><CR>
     # Copy all files in the directory under the cursor to anywhere.
-    nnoremap <buffer> CP :<C-u>!cp -a %:p:h/<C-r><C-w>/* %:p:h/<C-d>
+    nnoremap <buffer> CP :<C-u>!cp -a %:p:h/<C-r><C-f>/* %:p:h/<C-d>
     # Move the file under the cursor to anywhere.
-    nnoremap <buffer> MV :<C-u>!mv %:p:h/<C-r><C-w> %:p:h/<C-d>
+    nnoremap <buffer> MV :<C-u>!mv %:p:h/<C-r><C-f> %:p:h/<C-d>
     # Overwrite <C-l>.
     nnoremap <buffer> <C-l> <Cmd>tabnext<CR>
 enddef
