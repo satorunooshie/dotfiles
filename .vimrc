@@ -888,6 +888,7 @@ nnoremap <silent> <Space>rn <Cmd>LspRename<CR>
 nnoremap <silent> <Space>im <Cmd>LspImplementation<CR>
 nnoremap <silent> <Space>ho <Cmd>LspHover<CR>
 nnoremap <silent> <Space>ds <Cmd>LspDocumentSymbol<CR>
+nnoremap <silent> <Space>dd <Cmd>LspDocumentDiagnostics<CR>
 nnoremap <silent> <Space>ca <Cmd>LspCodeAction<CR>
 #}}}
 #}}}
