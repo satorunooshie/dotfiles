@@ -336,15 +336,43 @@ g:netrw_banner = 1
 g:netrw_use_errorwindow = 0
 g:netrw_localmkdiropt = ' -a'
 
+# OperateUnderCursor accepts 'remove', 'copy', 'move'.
+def! g:OperateUnderCursor(op: string): void #{{{
+  const dir: string = expand('%:p:h') .. '/'
+  const path: string = dir .. expand('<cfile>')
+  var cmd: string = ''
+  if op ==# 'remove'
+    if isdirectory(path)
+      delete(path, 'rf')
+    else
+      delete(path)
+    endif
+    return
+  elseif op ==# 'copy'
+    if isdirectory(path)
+      cmd = 'cp -a ' .. path .. '/* ' ..  dir .. input('dst: ', '', 'dir')
+    else
+      cmd = 'cp ' .. path .. ' ' ..  dir .. input('dst: ', '', 'dir')
+    endif
+  elseif op ==# 'move'
+    if isdirectory(path)
+      cmd = 'mv ' .. path .. ' ' ..  dir .. input('dst: ', '', 'dir')
+    else
+      cmd = 'mv ' .. path .. ' ' ..  dir .. input('dst: ', '', 'file')
+    endif
+  else
+    return
+  endif
+  # Use execute to show error message.
+  execute system(cmd)
+enddef #}}}
+
 def NetrwRemap(): void
-    # Remove all under the cursor.
-    nnoremap <buffer> D :<C-u>!rm -rf %:p:h/<C-r><C-f><CR><CR>\|:e!<CR>
-    # Copy all files in the directory under the cursor to anywhere.
-    nnoremap <buffer> CP :<C-u>!cp -a %:p:h/<C-r><C-f>/* %:p:h/<C-d>
-    # Move the file under the cursor to anywhere.
-    nnoremap <buffer> MV :<C-u>!mv %:p:h/<C-r><C-f> %:p:h/<C-d>
-    # Overwrite <C-l>.
-    nnoremap <buffer> <C-l> <Cmd>tabnext<CR>
+  nnoremap <buffer> D <Cmd>call g:OperateUnderCursor('remove') \| :e!<CR>
+  nnoremap <buffer> CP <Cmd>call g:OperateUnderCursor('copy') \| :e!<CR>
+  nnoremap <buffer> MV <Cmd>call g:OperateUnderCursor('move') \| :e!<CR>
+  # Overwrite <C-l>.
+  nnoremap <buffer> <C-l> <Cmd>tabnext<CR>
 enddef
 autocmd MyVimrcCmd FileType netrw call NetrwRemap()
 #}}}
