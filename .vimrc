@@ -349,22 +349,21 @@ def! g:OperateUnderCursor(op: string): void #{{{
     endif
     return
   elseif op ==# 'copy'
-    if isdirectory(path)
-      cmd = 'cp -a ' .. path .. '/* ' ..  dir .. input('dst: ', '', 'dir')
-    else
-      cmd = 'cp ' .. path .. ' ' ..  dir .. input('dst: ', '', 'dir')
-    endif
+    cmd = 'cp -a ' .. path .. ' ' .. input('dst: ', dir, 'dir')
   elseif op ==# 'move'
     if isdirectory(path)
-      cmd = 'mv ' .. path .. ' ' ..  dir .. input('dst: ', '', 'dir')
+      cmd = 'mv ' .. path .. ' ' .. input('dst: ', dir, 'dir')
     else
-      cmd = 'mv ' .. path .. ' ' ..  dir .. input('dst: ', '', 'file')
+      cmd = 'mv ' .. path .. ' ' .. input('dst: ', dir, 'file')
     endif
   else
     return
   endif
-  # Use execute to show error message.
-  execute system(cmd)
+  const out: string = system(cmd)
+  histadd('cmd', 'call system("' .. cmd .. '")')
+  if v:shell_error
+    echoerr out
+  endif
 enddef #}}}
 
 def NetrwRemap(): void
