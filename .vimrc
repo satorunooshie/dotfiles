@@ -886,12 +886,18 @@ nmap cN <Plug>(rc_search_backward_with_last_pattern)
 #}}}
 
 # vim-lsp: #{{{
+def! g:LspDocumentDiagnostics(): void
+  execute 'LspDocumentDiagnostics'
+  if !getloclist(0)->empty()
+    Loc2Qf
+  endif
+enddef
 nnoremap <silent> <Space>rf <Cmd>LspReferences<CR>
 nnoremap <silent> <Space>rn <Cmd>LspRename<CR>
 nnoremap <silent> <Space>im <Cmd>LspImplementation<CR>
 nnoremap <silent> <Space>ho <Cmd>LspHover<CR>
 nnoremap <silent> <Space>ds <Cmd>LspDocumentSymbol<CR>
-nnoremap <silent> <Space>dd <Cmd>LspDocumentDiagnostics<CR>
+nnoremap <silent> <Space>dd <Cmd>call LspDocumentDiagnostics()<CR>
 nnoremap <silent> <Space>ca <Cmd>LspCodeAction<CR>
 #}}}
 #}}}
