@@ -627,6 +627,10 @@ command! DiffOrig vert new | set bt=nofile | execute 'r ++edit ' .. expand('#') 
 # Convert location list to quickfix list. #{{{
 command! Loc2Qf call setqflist(getloclist(0)) | lclose | copen
 #}}}
+
+# Convert quickfix list to location list. #{{{
+command! Qf2Loc call setloclist(0, getqflist()) | cclose | lopen
+#}}}
 #}}}
 
 # ---------------------------------------------------------------------------
