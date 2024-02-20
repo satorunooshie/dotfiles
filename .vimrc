@@ -690,8 +690,8 @@ augroup END
 
 # Format and organize imports on save.
 def GoFormatAndOrganizeImports(): void
-  silent LspDocumentFormatSync
-  silent LspCodeActionSync source.organizeImports
+  silent execute 'LspDocumentFormatSync'
+  silent execute 'LspCodeActionSync source.organizeImports'
 enddef
 autocmd MyVimrcCmd BufWritePre *.go GoFormatAndOrganizeImports()
 
