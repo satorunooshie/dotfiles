@@ -349,10 +349,10 @@ def! g:OperateUnderCursor(op: string): void #{{{
     endif
     return
   elseif op ==# 'copy'
-    cmd = 'cp -a ' .. path .. ' ' .. input('dst: ', dir, 'dir')
+    cmd = 'cp -a ' .. path .. ' ' .. input('Copying ' .. path .. ' to: ', dir, 'dir')
   elseif op ==# 'move'
     if isdirectory(path)
-      cmd = 'mv ' .. path .. ' ' .. input('dst: ', dir, 'dir')
+      cmd = 'mv ' .. path .. ' ' .. input('Moving ' .. path .. ' to: ', dir, 'dir')
     else
       cmd = 'mv ' .. path .. ' ' .. input('dst: ', dir, 'file')
     endif
