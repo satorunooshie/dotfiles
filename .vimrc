@@ -565,6 +565,15 @@ command! -bar -nargs=? ModsNew <mods> new
   | if len(<q-args>) > 0
   | edit [<args>]
   | endif
+
+# List files recursively in the specified directory.
+# `./` after `Files:` is necessary to avoid `expand()` unexpected error(E944).
+command! -bar -nargs=1 -complete=dir Files <mods> ModsNew Files:./<args>
+  | ToScratchForFiles
+  | setline(1, system('find "<args>" -path "*/.*" -type d -prune -o -type f -print')->split('\n'))
+command! FilesBuffer <mods> Files %:p:h
+command! FilesCurrent <mods> Files .
+
 # Filter files that are not readable and not in the git repository if it exists.
 def FilterFiles(files: list<string>): list<string> #{{{
   return files->filter((_, v: string) => v->expand()->filereadable())->mapnew((_, v: string) => v->trim()->expand()->substitute(expand('$HOME'), '~', ''))->filter((_, v: string) => (empty(git_root) || expand(v) =~# git_root) && v !~# '\.git/')
