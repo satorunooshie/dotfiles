@@ -572,7 +572,7 @@ command! MRU <mods> ModsNew MRU
 #command! MRUQuickfix setqflist(map(filter(v:oldfiles, (_, v: string) => filereadable(expand(v))), '{"filename": expand(v:val), "efm": "%f"}')) | copen
 command! -nargs=1 -complete=command L <mods> ModsNew <args>
   | ToScratchForFiles
-  | setline(1, split(execute(<q-args>), '\n'))
+  | setline(1, execute(<q-args>)->split('\n'))
 command! Buffers <mods> L buffers
 command! ScriptNames <mods> ModsNew ScriptNames
   | ToScratchForFiles
