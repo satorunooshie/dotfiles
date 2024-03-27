@@ -569,7 +569,6 @@ command! MRU <mods> ModsNew MRU
   | SetGitRoot
   | ToScratchForFiles
   | setline(1, v:oldfiles->filter((_, v: string) => filereadable(expand(v)))->mapnew((_, v: string) => v->trim()->expand()->substitute(expand('$HOME'), '~', ''))->filter((_, v: string) => (empty(git_root) || expand(v) =~# git_root) && v !~# '\.git/'))
-#command! MRUQuickfix setqflist(map(filter(v:oldfiles, (_, v: string) => filereadable(expand(v))), '{"filename": expand(v:val), "efm": "%f"}')) | copen
 command! -nargs=1 -complete=command L <mods> ModsNew <args>
   | ToScratchForFiles
   | setline(1, execute(<q-args>)->split('\n'))
