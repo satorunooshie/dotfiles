@@ -546,17 +546,19 @@ set hlsearch
 #
 var git_root = ''
 var git_root_cache = ''
-command! -bar SetGitRoot if g:current_dir !=# git_root_cache
-  | git_root_cache = g:current_dir
-  | git_root = system('git rev-parse --show-toplevel')
-  | if git_root =~# '^fatal'
-  | git_root = ''
-  | else
-  | git_root = git_root->trim()->expand()
-  | endif
-  | endif
-var files_cmd = 'find '
-var files_opts = '-type f'
+def SetGitRoot(): void #{{{
+  if g:current_dir !=# git_root_cache
+    git_root_cache = g:current_dir
+    git_root = system('git rev-parse --show-toplevel')
+    if git_root =~# '^fatal'
+      git_root = ''
+    else
+      git_root = git_root->trim()->expand()
+    endif
+  endif
+enddef #}}}
+command! -bar SetGitRoot SetGitRoot()
+
 command! -bar ToScratch setlocal buftype=nofile bufhidden=hide noswapfile
 command! -bar ToScratchForFiles ToScratch | setlocal iskeyword+=.
 command! -bar -nargs=? ModsNew <mods> new
