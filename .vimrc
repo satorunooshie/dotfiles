@@ -32,7 +32,7 @@ syntax on
 # ': Maximum number of previously edited files for which the marks are remembered.
 # :: Maximum number of items in the command-line history to be saved.
 # overwrite default setting
-set viminfo=<1000,h,s100,'10000,:100000
+set viminfo=<100,h,s100,'1000,:100
 set rtp+=/opt/homebrew/opt/fzf
 
 # ---------------------------------------------------------------------------
