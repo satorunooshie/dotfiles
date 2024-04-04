@@ -741,7 +741,10 @@ g:lsp_settings = {
   }
 }
 
-if filewritable(expand('~/tmp'))
+# if not exists or not writable, do not turn on verbose logging.
+# filewritable returns 2 when the path is a directory and writable,
+# and returns 1 when the path is writable, so it is compared to 0 to convert to Bool.
+if filewritable(expand('~/tmp')) !=# 0
   g:lsp_log_verbose = 1
   g:lsp_log_file = expand('~/tmp/vim-lsp-' .. strftime('%Y%m%d') .. '.log')
   g:lsp_settings['gopls']['cmd'] = ['gopls', '-logfile', expand('~/tmp/gopls-' .. strftime('%Y%m%d') .. '.log')]
