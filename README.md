@@ -1,0 +1,18 @@
+# github.com/satorunooshie/dotfiles [![startuptime](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fsatorunooshie%2F23f13f7ddec85107fb2357f08f03ab1e%2Fraw%2Fvim-startuptime.json)](https://github.com/satorunooshie/dotfiles/actions/workflows/vim-startuptime.yml?query=branch%3Amain)
+settings mainly for Vim on Mac.
+
+## Installation
+```bash
+# clone colorscheme.
+git clone --depth 1 https://github.com/satorunooshie/pairscolorscheme.git
+# create directory for colorscheme if not exists.
+mkdir -p ~/.vim/colors
+cp ./pairscolorscheme/colors/pairs.vim ~/.vim/colors/
+# install all dependencies.
+vim -c 'call InstallPackPlugins()' -c 'quitall!'
+```
+
+## Maintenance
+```bash
+vim -c 'call UpdatePackPlugins()' -c 'quitall!'
+```
