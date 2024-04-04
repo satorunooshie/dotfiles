@@ -741,9 +741,11 @@ g:lsp_settings = {
   }
 }
 
-g:lsp_log_verbose = 1
-g:lsp_log_file = expand('~/tmp/vim-lsp-' .. strftime('%Y%m%d') .. '.log')
-g:lsp_settings['gopls']['cmd'] = ['gopls', '-logfile', expand('~/tmp/gopls-' .. strftime('%Y%m%d') .. '.log')]
+if filewritable(expand('~/tmp'))
+  g:lsp_log_verbose = 1
+  g:lsp_log_file = expand('~/tmp/vim-lsp-' .. strftime('%Y%m%d') .. '.log')
+  g:lsp_settings['gopls']['cmd'] = ['gopls', '-logfile', expand('~/tmp/gopls-' .. strftime('%Y%m%d') .. '.log')]
+endif
 #}}}
 #}}}
 
