@@ -140,7 +140,7 @@ def! g:UpdatePackPlugins(): void #{{{
     enddef
 
     job_start(
-      printf('git -C %s pull --ff --ff-only', dst),
+      'git -C ' .. dst .. ' pull --ff --ff-only',
       {'callback': function(DisplayUpdatedPlugin, [plugin_name])},
     )
 
