@@ -44,6 +44,7 @@ add(plugins.start, 'https://github.com/kana/vim-textobj-user')
 add(plugins.start, 'https://github.com/kana/vim-operator-user')
 add(plugins.opt, 'https://github.com/vim-jp/vimdoc-ja')
 add(plugins.opt, 'https://github.com/mhinz/vim-signify')
+add(plugins.opt, 'https://github.com/Eliot00/git-lens.vim.git')
 add(plugins.opt, 'https://github.com/kana/vim-textobj-indent')
 add(plugins.opt, 'https://github.com/kana/vim-textobj-syntax')
 add(plugins.opt, 'https://github.com/kana/vim-textobj-line')
@@ -77,11 +78,11 @@ add(plugins.opt, 'https://github.com/thinca/vim-quickrun')
 # ex) :PP.
 add(plugins.opt, 'https://github.com/thinca/vim-prettyprint')
 add(plugins.opt, 'https://github.com/thinca/vim-showtime')
-add(plugins.opt, 'https://github.com/LeafCage/vimhelpgenerator')
 add(plugins.opt, 'https://github.com/prabirshrestha/vim-lsp')
 add(plugins.opt, 'https://github.com/mattn/vim-lsp-settings')
 add(plugins.opt, 'https://github.com/knsh14/vim-github-link')
 add(plugins.opt, 'https://github.com/satorunooshie/vim-drawbox')
+add(plugins.opt, 'https://github.com/LeafCage/vimhelpgenerator')
 add(plugins.opt, 'https://github.com/lifepillar/vim-colortemplate')
 
 def CreateHelpTags(path: string): void
@@ -664,6 +665,18 @@ g:termdebug_config['sign'] = '>>'
 #}}}
 
 # ---------------------------------------------------------------------------
+# git-lens: #{{{
+#
+g:GIT_LENS_CONFIG = {
+  blame_prefix: '    ---- ',
+  blame_highlight: 'LineNr',
+  blame_wrap: false,
+  blame_empty_line: false,
+  blame_delay: 50,
+}
+#}}}
+
+# ---------------------------------------------------------------------------
 # vim-quickrun: #{{{
 #
 if !exists('g:quickrun_config')
@@ -907,6 +920,10 @@ nmap cn <Plug>(rc_search_forward_with_last_pattern)
 nmap cN <Plug>(rc_search_backward_with_last_pattern)
 # nmap <Esc><Esc> <Plug>(rc_reset):nohlsearch<CR>
 # nnoremap <Esc><Esc> <Cmd>RCReset<CR>:nohlsearch<CR>
+#}}}
+
+# git-lens: #{{{
+nnoremap <silent> <Space>gl <Cmd>call ToggleGitLens()<CR>
 #}}}
 
 # vim-lsp: #{{{
