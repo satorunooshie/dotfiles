@@ -628,8 +628,8 @@ autocmd MyVimrcCmd FileType proto setlocal shiftwidth=2 tabstop=2 makeprg=buf
 # Sanitize the command line history. #{{{
 def SanitizeHistory(): void
   var cmd = histget(":", -1)
-  if cmd == "x" || cmd == "xa" || cmd == "e!" ||
-      cmd == "vs" || cmd =~# "^w\\?q\\?a\\?!\\?$"
+  if cmd ==# "x" || cmd ==# "xa" || cmd ==# "e!" ||
+      cmd ==# "vs" || cmd =~# "^w\\?q\\?a\\?!\\?$"
     histdel(":", -1)
   endif
 enddef
