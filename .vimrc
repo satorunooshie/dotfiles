@@ -293,7 +293,11 @@ command! UseGitGrepNoIndex setlocal grepprg=git\ grep\ --no-color\ -n\ --column\
 command! UseDefaultGitGrep set grepprg=git\ grep\ --no-color\ -n\ --column\ --untracked
 #}}}
 
-# Open quickfix window automatically. #{{{
+# Quickfix: #{{{
+# Open a new tab when jumping to a quickfix item, splitting buffers, using stag,
+# CTRL-W_f or CTRL-W_F.
+set switchbuf=newtab
+# Open quickfix window automatically.
 autocmd MyVimrcCmd QuickfixCmdPre make,grep,grepadd,vimgrep,vimgrepadd,helpgrep copen
 #}}}
 
