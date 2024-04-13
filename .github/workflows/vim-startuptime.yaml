@@ -6,7 +6,7 @@ env:
   GIST_TOKEN: ${{ secrets.GIST_TOKEN }}
 
 jobs:
-  measure-spped:
+  measure-speed:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
