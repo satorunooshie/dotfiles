@@ -64,9 +64,6 @@ add(plugins.opt, 'https://github.com/markonm/traces.vim')
 # Highlight each by a different color.
 add(plugins.opt, 'https://github.com/daisuzu/rainbowcyclone.vim')
 add(plugins.opt, 'https://github.com/tpope/vim-surround')
-# An extensible & universal comment vim-plugin that also handles embedded filetypes.
-# ex) gcc.
-add(plugins.opt, 'https://github.com/tomtom/tcomment_vim')
 # Make blockwise visual mode more useful.
 # ex) shift v + shift i.
 add(plugins.opt, 'https://github.com/kana/vim-niceblock')
@@ -182,6 +179,7 @@ def PackAddHandler(timer: number) #{{{
 
   ++pidx
   if pidx == len(plugins.opt)
+    packadd comment
     packadd cfilter
     # Extended % matching.
     packadd matchit
