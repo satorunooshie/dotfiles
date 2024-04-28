@@ -323,7 +323,16 @@ augroup END
 #}}}
 
 # github.com/satorunooshie/pairscolorscheme
-colorscheme pairs
+try
+  colorscheme pairs
+catch /E185/
+  # Install if not found.
+  const colors_dir_path = expand('~/.vim/colors/')
+  MkdirIfNotExists(colors_dir_path)
+  system('git clone --depth 1 --recursive https://github.com/satorunooshie/pairscolorscheme ' .. colors_dir_path .. 'pairs')
+  system('mv ' .. colors_dir_path .. 'pairs/colors/pairs.vim ' ..  colors_dir_path .. 'pairs.vim')
+  colorscheme pairs
+endtry
 #}}}
 
 # ---------------------------------------------------------------------------
