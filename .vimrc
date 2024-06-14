@@ -911,6 +911,8 @@ nnoremap <silent> <Space>cp <Cmd>call system('echo ' .. expand('%') .. ' \| pbco
 nnoremap <silent> <Space>jq <Cmd>%!jq '.'<CR>
 # Force save.
 cmap w!! w !sudo tee > /dev/null %
+# checkout file.
+nnoremap <silent> <Leader>co <Cmd>call system('git checkout -- ' .. expand('%')) \| e!<CR>
 #}}}
 
 # ---------------------------------------------------------------------------
