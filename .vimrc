@@ -709,11 +709,6 @@ g:vimhelpgenerator_defaultlanguage = 'en'
 # ---------------------------------------------------------------------------
 # copilot: #{{{
 #
-g:copilot_filetypes = {
-  'gitcommit': true,
-  'markdown': true,
-  'yaml': true,
-}
 #}}}
 
 # ---------------------------------------------------------------------------
