@@ -709,6 +709,8 @@ g:vimhelpgenerator_defaultlanguage = 'en'
 # ---------------------------------------------------------------------------
 # copilot: #{{{
 #
+imap <C-C><C-N> <Plug>(copilot-next)
+imap <C-C><C-P> <Plug>(copilot-previous)
 #}}}
 
 # ---------------------------------------------------------------------------
