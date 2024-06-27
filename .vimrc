@@ -722,7 +722,6 @@ g:copilot_filetypes = {
 g:lsp_fold_enabled = 0
 g:lsp_diagnostics_echo_cursor = 1
 g:lsp_diagnostics_virtual_text_enabled = 0
-g:goimports_simplify = 1
 g:lsp_tagfunc_source_methods = ['definition']
 
 def LspBufferEnabled(): void
