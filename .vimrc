@@ -115,13 +115,14 @@ def! g:InstallPackPlugins(): void #{{{
 enddef #}}}
 
 def! g:UpdatePackPlugins(): void #{{{
+  const bufname = 'vimrc://update/plugins'
   # Needs escape not to use file-pattern.
-  var prevbuf: number = bufnr('\[update plugins]\')
+  var prevbuf: number = bufnr(bufname)
   if prevbuf != -1
     # Needs `:` before Ex command with range.
     execute ':' .. prevbuf .. 'bwipeout!'
   endif
-  var nr: number = bufadd('[update plugins]')
+  var nr: number = bufadd(bufname)
   bufload(nr)
   execute ':' .. nr .. 'sb'
   ToScratch
@@ -575,7 +576,7 @@ command! -bar ToScratch setlocal buftype=nofile bufhidden=hide noswapfile
 command! -bar ToScratchForFiles ToScratch | setlocal iskeyword+=.
 command! -bar -nargs=? ModsNew <mods> new
   | if len(<q-args>) > 0
-  | edit [<args>]
+  | edit modsnew://output/<args>
   | endif
 
 # List files recursively in the specified directory.
