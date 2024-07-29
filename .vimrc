@@ -128,7 +128,7 @@ def! g:UpdatePackPlugins(): void #{{{
   execute ':' .. nr .. 'sb'
   ToScratch
 
-  def PluginUpdateHandler(timer: any): void #{{{
+  def PluginUpdateHandler(timer: number): void #{{{
     const plugin_dir = expand($PACKPATH .. '/' .. 'opt')
     const plugin_url = plugins.opt[idx]
     const plugin_name = split(plugin_url, '/')[-1]
