@@ -115,6 +115,7 @@ def! g:InstallPackPlugins(): void #{{{
 enddef #}}}
 
 def! g:UpdatePackPlugins(): void #{{{
+  var idx = 0
   const bufname = 'vimrc://update/plugins'
   # Needs escape not to use file-pattern.
   var prevbuf: number = bufnr(bufname)
@@ -129,7 +130,7 @@ def! g:UpdatePackPlugins(): void #{{{
 
   def PluginUpdateHandler(timer: any): void #{{{
     const plugin_dir = expand($PACKPATH .. '/' .. 'opt')
-    const plugin_url = plugins.opt[pidx]
+    const plugin_url = plugins.opt[idx]
     const plugin_name = split(plugin_url, '/')[-1]
     const dst = expand(plugin_dir .. '/' .. plugin_name)
 
@@ -159,13 +160,13 @@ def! g:UpdatePackPlugins(): void #{{{
       endfor
     enddef #}}}
 
-    ++pidx
-    if pidx == len(plugins.opt)
+    ++idx
+    if idx == len(plugins.opt)
       UpdateHelpTags()
     endif
   enddef #}}}
 
-  pidx = 0
+  idx = 0
   timer_start(100, function(PluginUpdateHandler), {'repeat': len(plugins.opt)})
 enddef #}}}
 
