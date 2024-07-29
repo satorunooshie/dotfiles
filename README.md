@@ -3,12 +3,7 @@ settings mainly for Vim on Mac.
 
 ## Installation
 ```bash
-# clone colorscheme.
-git clone --depth 1 https://github.com/satorunooshie/pairscolorscheme.git
-# create directory for colorscheme if not exists.
-mkdir -p ~/.vim/colors
-cp ./pairscolorscheme/colors/pairs.vim ~/.vim/colors/
-# install all dependencies.
+# install all dependencies including colorscheme.
 vim -c 'call InstallPackPlugins()' -c 'quitall!'
 ```
 
