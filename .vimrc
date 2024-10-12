@@ -78,7 +78,6 @@ add(plugins.opt, 'https://github.com/thinca/vim-showtime')
 add(plugins.opt, 'https://github.com/prabirshrestha/vim-lsp')
 add(plugins.opt, 'https://github.com/mattn/vim-lsp-settings')
 add(plugins.opt, 'https://github.com/knsh14/vim-github-link')
-add(plugins.opt, 'https://github.com/satorunooshie/vim-drawbox')
 add(plugins.opt, 'https://github.com/LeafCage/vimhelpgenerator')
 add(plugins.opt, 'https://github.com/lifepillar/vim-colortemplate')
 
