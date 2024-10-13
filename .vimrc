@@ -44,7 +44,6 @@ add(plugins.start, 'https://github.com/kana/vim-textobj-user')
 add(plugins.start, 'https://github.com/kana/vim-operator-user')
 add(plugins.opt, 'https://github.com/vim-jp/vimdoc-ja')
 add(plugins.opt, 'https://github.com/mhinz/vim-signify')
-add(plugins.opt, 'https://github.com/Eliot00/git-lens.vim.git')
 add(plugins.opt, 'https://github.com/kana/vim-textobj-indent')
 add(plugins.opt, 'https://github.com/kana/vim-textobj-syntax')
 add(plugins.opt, 'https://github.com/kana/vim-textobj-line')
@@ -52,34 +51,35 @@ add(plugins.opt, 'https://github.com/kana/vim-textobj-fold')
 add(plugins.opt, 'https://github.com/kana/vim-textobj-entire')
 add(plugins.opt, 'https://github.com/thinca/vim-textobj-between')
 add(plugins.opt, 'https://github.com/thinca/vim-textobj-comment')
-add(plugins.opt, 'https://github.com/github/copilot.vim')
 add(plugins.opt, 'https://github.com/h1mesuke/textobj-wiw')
 add(plugins.opt, 'https://github.com/sgur/vim-textobj-parameter')
 add(plugins.opt, 'https://github.com/kana/vim-operator-replace')
-add(plugins.opt, 'https://github.com/thinca/vim-qfreplace')
-add(plugins.opt, 'https://github.com/mattn/vim-maketable')
-# Live preview substitute result and
-# highlight patterns and ranges for Ex commands in Command-line mode.
-add(plugins.opt, 'https://github.com/markonm/traces.vim')
-# Highlight each by a different color.
-add(plugins.opt, 'https://github.com/daisuzu/rainbowcyclone.vim')
 add(plugins.opt, 'https://github.com/tpope/vim-surround')
 # Make blockwise visual mode more useful.
 # ex) shift v + shift i.
 add(plugins.opt, 'https://github.com/kana/vim-niceblock')
+add(plugins.opt, 'https://github.com/knsh14/vim-github-link')
+add(plugins.opt, 'https://github.com/prabirshrestha/vim-lsp')
+add(plugins.opt, 'https://github.com/mattn/vim-lsp-settings')
+add(plugins.opt, 'https://github.com/prabirshrestha/asyncomplete.vim')
+add(plugins.opt, 'https://github.com/prabirshrestha/asyncomplete-lsp.vim')
+add(plugins.opt, 'https://github.com/github/copilot.vim')
+add(plugins.opt, 'https://github.com/Eliot00/git-lens.vim.git')
+add(plugins.opt, 'https://github.com/thinca/vim-quickrun')
+add(plugins.opt, 'https://github.com/thinca/vim-qfreplace')
+# Live preview substitute result and
+# highlight patterns and ranges for Ex commands in Command-line mode.
+add(plugins.opt, 'https://github.com/markonm/traces.vim')
 # Star for visual mode.
 # ex) shift v + *.
 add(plugins.opt, 'https://github.com/thinca/vim-visualstar')
-add(plugins.opt, 'https://github.com/thinca/vim-quickrun')
+add(plugins.opt, 'https://github.com/mattn/vim-maketable')
+# Highlight each by a different color.
+add(plugins.opt, 'https://github.com/daisuzu/rainbowcyclone.vim')
 # Prettyprint vim variables.
 # ex) :PP.
 add(plugins.opt, 'https://github.com/thinca/vim-prettyprint')
 add(plugins.opt, 'https://github.com/thinca/vim-showtime')
-add(plugins.opt, 'https://github.com/prabirshrestha/vim-lsp')
-add(plugins.opt, 'https://github.com/prabirshrestha/asyncomplete.vim')
-add(plugins.opt, 'https://github.com/prabirshrestha/asyncomplete-lsp.vim')
-add(plugins.opt, 'https://github.com/mattn/vim-lsp-settings')
-add(plugins.opt, 'https://github.com/knsh14/vim-github-link')
 add(plugins.opt, 'https://github.com/LeafCage/vimhelpgenerator')
 add(plugins.opt, 'https://github.com/lifepillar/vim-colortemplate')
 
