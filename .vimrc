@@ -961,6 +961,59 @@ nnoremap <silent> <Space>ds <Cmd>LspDocumentSymbol<CR>
 nnoremap <silent> <Space>dd <Cmd>call LspDocumentDiagnostics()<CR>
 nnoremap <silent> <Space>ca <Cmd>LspCodeAction<CR>
 #}}}
+
+# asyncomplete: #{{{
+g:asyncomplete_enabled_filetype = {}
+
+# Toggle asyncomplete for the current filetype.
+# Handle exceptions raised by lazy loading of plugins.
+def! g:ToggleAsyncompleteForFiletype() #{{{
+  if has_key(g:asyncomplete_enabled_filetype, &ft) && g:asyncomplete_enabled_filetype[&ft]
+    remove(g:asyncomplete_enabled_filetype, &ft)
+    try
+      execute 'g:asyncomplete#disable_for_buffer()'
+    catch /E117/
+    endtry
+    return
+  endif
+  try
+    execute 'g:asyncomplete#enable_for_buffer()'
+  catch /E117/
+    echomsg 'asyncomplete not loaded yet.'
+    return
+  endtry
+  # If the plugin is not loaded, it is conceivable that this will be called
+  # again without being applied to the current buffer at least, so set the
+  # flag only when successful.
+  g:asyncomplete_enabled_filetype[&ft] = 1
+enddef #}}}
+
+nnoremap <silent> <Space>tac <Cmd>call g:ToggleAsyncompleteForFiletype()<CR>
+
+# Apply asyncomplete settings to the current buffer if the filetype is
+# enabled.
+# Handle exceptions raised by lazy loading of plugins.
+def! g:ApplyAsyncompleteSettingByFileType() #{{{
+  if has_key(g:asyncomplete_enabled_filetype, &ft) && g:asyncomplete_enabled_filetype[&ft]
+    try
+      execute 'g:asyncomplete#enable_for_buffer()'
+    catch /E117/
+    endtry
+    return
+  endif
+  try
+    execute 'g:asyncomplete#disable_for_buffer()'
+  catch /E117/
+  endtry
+enddef #}}}
+
+augroup AsyncompleteFiletypeToggle
+  autocmd!
+  autocmd BufEnter * call g:ApplyAsyncompleteSettingByFileType()
+augroup END
+#}}}
+
+#}}}
 #}}}
 
 # ---------------------------------------------------------------------------
