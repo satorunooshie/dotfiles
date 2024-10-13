@@ -774,6 +774,13 @@ if filewritable(expand('~/tmp')) !=# 0
   g:lsp_settings['gopls']['cmd'] = ['gopls', '-logfile', expand('~/tmp/gopls-' .. strftime('%Y%m%d') .. '.log')]
 endif
 #}}}
+
+# ---------------------------------------------------------------------------
+# asyncomplete: #{{{
+#
+g:asyncomplete_enable_for_all = 0
+#}}}
+
 #}}}
 
 # ---------------------------------------------------------------------------
