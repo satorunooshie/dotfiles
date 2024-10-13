@@ -968,7 +968,8 @@ g:asyncomplete_enabled_filetype = {}
 # Toggle asyncomplete for the current filetype.
 # Handle exceptions raised by lazy loading of plugins.
 def! g:ToggleAsyncompleteForFiletype() #{{{
-  if has_key(g:asyncomplete_enabled_filetype, &ft) && g:asyncomplete_enabled_filetype[&ft]
+  const enabled = get(g:asyncomplete_enabled_filetype, &ft, 0)
+  if enabled
     remove(g:asyncomplete_enabled_filetype, &ft)
     try
       execute 'g:asyncomplete#disable_for_buffer()'
@@ -994,7 +995,8 @@ nnoremap <silent> <Space>tac <Cmd>call g:ToggleAsyncompleteForFiletype()<CR>
 # enabled.
 # Handle exceptions raised by lazy loading of plugins.
 def! g:ApplyAsyncompleteSettingByFileType() #{{{
-  if has_key(g:asyncomplete_enabled_filetype, &ft) && g:asyncomplete_enabled_filetype[&ft]
+  const enabled = get(g:asyncomplete_enabled_filetype, &ft, 0)
+  if enabled
     try
       execute 'g:asyncomplete#enable_for_buffer()'
     catch /E117/
@@ -1007,6 +1009,10 @@ def! g:ApplyAsyncompleteSettingByFileType() #{{{
   endtry
 enddef #}}}
 
+# Use BufEnter to apply settings when switching between buffers, as FileType
+# is triggered only when the filetype changes or when a file is first opened.
+# Buffer ensures that the asyncomplete settings are applied even when the
+# filetype remains the same.
 augroup AsyncompleteFiletypeToggle
   autocmd!
   autocmd BufEnter * call g:ApplyAsyncompleteSettingByFileType()
