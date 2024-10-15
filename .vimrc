@@ -972,13 +972,13 @@ def! g:ToggleAsyncompleteForFiletype() #{{{
   if enabled
     remove(g:asyncomplete_enabled_filetype, &ft)
     try
-      execute 'g:asyncomplete#disable_for_buffer()'
+      call g:asyncomplete#disable_for_buffer()
     catch /E117/
     endtry
     return
   endif
   try
-    execute 'g:asyncomplete#enable_for_buffer()'
+    call g:asyncomplete#enable_for_buffer()
   catch /E117/
     echomsg 'asyncomplete not loaded yet.'
     return
@@ -998,13 +998,13 @@ def! g:ApplyAsyncompleteSettingByFileType() #{{{
   const enabled = get(g:asyncomplete_enabled_filetype, &ft, 0)
   if enabled
     try
-      execute 'g:asyncomplete#enable_for_buffer()'
+      call g:asyncomplete#enable_for_buffer()
     catch /E117/
     endtry
     return
   endif
   try
-    execute 'g:asyncomplete#disable_for_buffer()'
+    call g:asyncomplete#disable_for_buffer()
   catch /E117/
   endtry
 enddef #}}}
