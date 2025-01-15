@@ -944,15 +944,22 @@ nnoremap <silent> <Space>gl <Cmd>call ToggleGitLens()<CR>
 # vim-lsp: #{{{
 def! g:LspDocumentDiagnostics(): void
   execute 'LspDocumentDiagnostics'
+  # Technically it is better to wait for the completion of the LSP.
   if !getloclist(0)->empty()
     Loc2Qf
   endif
+enddef
+def! g:LspDocumentSymbolFiltered(): void
+  silent execute 'LspDocumentSymbol'
+  # Wait for the completion of the LSP.
+  sleep 10m
+  execute 'Cfilter function\|method'
 enddef
 nnoremap <silent> <Space>rf <Cmd>LspReferences<CR>
 nnoremap <silent> <Space>rn <Cmd>LspRename<CR>
 nnoremap <silent> <Space>im <Cmd>LspImplementation<CR>
 nnoremap <silent> <Space>ho <Cmd>LspHover<CR>
-nnoremap <silent> <Space>ds <Cmd>LspDocumentSymbol<CR>
+nnoremap <silent> <Space>ds <Cmd>call LspDocumentSymbolFiltered()<CR>
 nnoremap <silent> <Space>dd <Cmd>call LspDocumentDiagnostics()<CR>
 nnoremap <silent> <Space>ca <Cmd>LspCodeAction<CR>
 nnoremap <silent> <Space>nr <Cmd>LspNextError<CR>
