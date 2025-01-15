@@ -746,17 +746,12 @@ g:lsp_settings = {
   gopls: {
     initialization_options: {
       matcher: 'fuzzy',
-      completeUnimported: false,
       deepCompletion: false,
       usePlaceholders: false,
       symbolMatcher: 'fuzzy',
       symbolStyle: 'full',
       gofumpt: true,
       staticcheck: false,
-      analyses: {
-        fillstruct: true,
-        unusedwrite: true,
-      },
       codelenses: {
         gc_details: true,
         test: true,
