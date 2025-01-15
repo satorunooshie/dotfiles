@@ -955,6 +955,8 @@ nnoremap <silent> <Space>ho <Cmd>LspHover<CR>
 nnoremap <silent> <Space>ds <Cmd>LspDocumentSymbol<CR>
 nnoremap <silent> <Space>dd <Cmd>call LspDocumentDiagnostics()<CR>
 nnoremap <silent> <Space>ca <Cmd>LspCodeAction<CR>
+nnoremap <silent> <Space>nr <Cmd>LspNextError<CR>
+nnoremap <silent> <Space>pr <Cmd>LspPreviousError<CR>
 #}}}
 
 # asyncomplete: #{{{
