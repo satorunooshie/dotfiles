@@ -288,6 +288,7 @@ set tags+=./**/tags
 
 # grep: #{{{
 set grepprg=git\ grep\ --no-color\ -n\ --column\ --untracked
+set grepformat=%f:%l:%c:%m,%f:%l:%m
 # Cannot be used --no-index and --untracked at the same time.
 # --no-index: for not using git repository.
 command! UseGitGrepNoIndex setlocal grepprg=git\ grep\ --no-color\ -n\ --column\ --no-index
