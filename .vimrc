@@ -67,6 +67,7 @@ add(plugins.opt, 'https://github.com/github/copilot.vim')
 add(plugins.opt, 'https://github.com/Eliot00/git-lens.vim.git')
 add(plugins.opt, 'https://github.com/thinca/vim-quickrun')
 add(plugins.opt, 'https://github.com/thinca/vim-qfreplace')
+add(plugins.opt, 'https://github.com/itchyny/vim-qfedit')
 # Live preview substitute result and
 # highlight patterns and ranges for Ex commands in Command-line mode.
 add(plugins.opt, 'https://github.com/markonm/traces.vim')
