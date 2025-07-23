@@ -356,22 +356,39 @@ g:netrw_localmkdiropt = ' -a'
 # OperateUnderCursor accepts 'remove', 'copy', 'move'.
 def! g:OperateUnderCursor(op: string): void #{{{
   const dir: string = expand('%:p:h') .. '/'
-  const path: string = dir .. expand('<cfile>')
+
+  def GetUnderCursorFilePath(): string
+    var filename: string = expand('<cfile>')
+    if filename ==# ''
+      filename = expand('<cword>') # Handle special file names like `\'`.
+    endif
+    try
+      if filename =~# '^~'
+        # Expand an expression and re-expand if it starts with ~.
+        return expand(filename)
+      endif
+    catch /E33/
+      # This happens if filename is `'` or `&` and Vim tries to use it as a pattern.
+      # In this case, fallback to normal filename handling.
+    endtry
+    return dir .. filename
+  enddef
+
+  var path: string = GetUnderCursorFilePath()
   var cmd: string = ''
   if op ==# 'remove'
-    if isdirectory(path)
-      delete(path, 'rf')
-    else
-      delete(path)
-    endif
+    echomsg 'Removing: ' .. path
+    var flags: string = isdirectory(path) ? 'rf' : ''
+    delete(path, flags)
+    histadd('cmd', 'call delete("' .. fnameescape(path) .. '", ' .. flags .. ')')
     return
   elseif op ==# 'copy'
-    cmd = 'cp -a ' .. path .. ' ' .. input('Copying ' .. path .. ' to: ', dir, 'dir')
+    cmd = 'cp -a ' .. path .. ' ' .. input('Copying ' .. escape(path, "&'") .. ' to: ', dir, 'dir')
   elseif op ==# 'move'
     if isdirectory(path)
-      cmd = 'mv ' .. path .. ' ' .. input('Moving ' .. path .. ' to: ', dir, 'dir')
+      cmd = 'mv ' .. path .. ' ' .. input('Moving ' .. escape(path, "&'") .. ' to: ', dir, 'dir')
     else
-      cmd = 'mv ' .. path .. ' ' .. input('dst: ', dir, 'file')
+      cmd = 'mv ' .. path .. ' ' .. input('dst: ', escape(dir, "&'"), 'file')
     endif
   else
     return
