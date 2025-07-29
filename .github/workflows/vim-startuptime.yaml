@@ -41,7 +41,7 @@ jobs:
           cp ./pairscolorscheme/colors/pairs.vim ~/.vim/colors/
       - name: Run vim-startuptime
         run: |
-          vim-startuptime -vimpath ${{ steps.vim.outputs.executable }} -count 300 -warmup 50 -script >> output.txt
+          vim-startuptime -vimpath ${{ steps.vim.outputs.executable }} -count 300 -warmup 100 -script >> output.txt
           echo total_average_time=$(cat output.txt | grep 'Total Average:' | awk '{printf "%.2f %s", $3, $4}') >> $GITHUB_ENV
       - name: Update badge
         run: |
