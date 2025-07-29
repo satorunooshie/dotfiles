@@ -34,8 +34,11 @@ set viminfo=<100,h,s100,'1000,:100
 #
 $PACKPATH = expand('~/.vim/pack/Bundle')
 final plugins: dict<list<string>> = {'start': [], 'opt': []}
+# Skip loading plugins in the start directory, because they are loaded
+# automatically.
 add(plugins.start, 'https://github.com/kana/vim-textobj-user')
 add(plugins.start, 'https://github.com/kana/vim-operator-user')
+
 add(plugins.opt, 'https://github.com/vim-jp/vimdoc-ja')
 add(plugins.opt, 'https://github.com/mhinz/vim-signify')
 add(plugins.opt, 'https://github.com/kana/vim-textobj-indent')
@@ -200,14 +203,6 @@ def PackAddHandler(timer: number) #{{{
 enddef #}}}
 
 if has('vim_starting') && has('timers')
-  for url in plugins.start
-    const plugin_name = split(url, '/')[-1]
-    const path = expand($PACKPATH .. '/start/' .. plugin_name)
-    if !isdirectory(path)
-      continue
-    endif
-    execute 'packadd ' .. plugin_name
-  endfor
   autocmd MyVimrcCmd VimEnter * timer_start(1, PackAddHandler, {'repeat': len(plugins.opt)})
 endif
 
