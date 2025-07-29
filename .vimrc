@@ -28,7 +28,6 @@ scriptencoding utf-8
 # :: Maximum number of items in the command-line history to be saved.
 # overwrite default setting
 set viminfo=<100,h,s100,'1000,:100
-set rtp+=/opt/homebrew/opt/fzf
 
 # ---------------------------------------------------------------------------
 # Load Plugins: #{{{
@@ -194,6 +193,9 @@ def PackAddHandler(timer: number) #{{{
       execute 'SignifyEnable'
     catch /E492/
     endtry
+
+    # Install fzf.
+    set rtp+=/opt/homebrew/opt/fzf
   endif
 enddef #}}}
 
