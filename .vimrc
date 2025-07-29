@@ -461,6 +461,16 @@ set listchars=tab:>-,extends:<,precedes:>,trail:-,eol:$,nbsp:%
 
 # Tabline settings. #{{{
 g:current_dir = fnamemodify(getcwd(), ':p:~:h') .. ' '
+
+def! g:LightTabLine(): string
+  const curbuf = bufname('%')
+  return '%#TabLine#%1T[' .. pathshorten(curbuf !=# '' ? curbuf : '[No Name]') .. ']%T%#TabLineFill#%T'
+enddef
+
+def! g:SetupFullTabLine(): void
+  set tabline=%!MakeTabLine()
+enddef
+
 def! g:MakeTabLine(): string #{{{
   def TabpageLabel(n: number): string #{{{
     const title = gettabwinvar(n, 0, 'title')
@@ -484,7 +494,9 @@ def! g:MakeTabLine(): string #{{{
   return tabpages .. '%=' .. g:current_dir
 enddef #}}}
 
-set tabline=%!MakeTabLine()
+set tabline=%!LightTabLine()
+
+autocmd MyVimrcCmd CursorMoved * ++once call g:SetupFullTabLine()
 #}}}
 
 # StatusLine settings. #{{{
@@ -566,12 +578,33 @@ def SetSimpleStatusLine(): void #{{{
   setlocal statusline+=%#StatusLineNCFileName#\/%t
 enddef #}}}
 
-augroup StatusLine #{{{
-  autocmd!
-  autocmd BufEnter * SetFullStatusLine()
-  autocmd BufLeave,BufNew,BufRead,BufNewFile * SetFullStatusLine()
-  # autocmd BufLeave,BufNew,BufRead,BufNewFile * SetSimpleStatusLine()
-augroup END #}}}
+set statusline=%f
+autocmd MyVimrcCmd CursorMoved * ++once call ApplyFullStatusLine()
+
+def ApplyFullStatusLine(): void #{{{
+  # Reset the statusline to the full status line.
+  set statusline=
+  SetFullStatusLine()
+
+  # Apply the status line to the remaining buffers
+  for bufnr in range(1, bufnr('$'))
+    if bufexists(bufnr) && buflisted(bufnr)
+      const winid = bufwinnr(bufnr)
+      if winid > 0 && winid != winnr() # Skip the current window.
+        execute ':' .. winid .. 'wincmd w'
+        SetFullStatusLine()
+      endif
+    endif
+  endfor
+
+  # Normal operation.
+  augroup StatusLine #{{{
+    autocmd!
+    autocmd BufEnter * call SetFullStatusLine()
+    autocmd BufLeave,BufNew,BufRead,BufNewFile * call SetFullStatusLine()
+    # autocmd BufLeave,BufNew,BufRead,BufNewFile * SetSimpleStatusLine()
+  augroup END #}}}
+enddef #}}}
 #}}}
 
 # ---------------------------------------------------------------------------
