@@ -318,7 +318,12 @@ endif
 augroup HighlightIdegraphicSpace
   autocmd!
   autocmd Colorscheme * highlight IdeographicSpace term=underline ctermbg=102 guibg=grey
-  autocmd ColorScheme,WinEnter * match IdeographicSpace /　\|\s\+$/
+  # Ignore if highlight group doesn't exist because of the delay of
+  # colorscheme loading.
+  autocmd Colorscheme,WinEnter * try
+      \ | match IdeographicSpace /　\|\s\+$/
+      \ | catch /E28/
+      \ | endtry
 augroup END
 #}}}
 
