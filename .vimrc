@@ -21,15 +21,6 @@ endif
 set encoding=utf-8
 scriptencoding utf-8
 
-# Note: Syntax generates based on settings in runtimepath
-# so it is nececcary to initialize runtimepath and
-# load file type highlight plugins prior to syntax on.
-def SyntaxOn(timer: number): void
-  syntax on
-enddef
-
-autocmd MyVimrcCmd VimEnter * timer_start(1, function('SyntaxOn'))
-
 # <: Maximum number of lines saved for each register.
 # h: 'hlsearch' highlighting will not be restored.
 # s: Maximum size of an item in Kbyte.
@@ -327,21 +318,31 @@ endif
 augroup HighlightIdegraphicSpace
   autocmd!
   autocmd Colorscheme * highlight IdeographicSpace term=underline ctermbg=102 guibg=grey
-  autocmd VimEnter,WinEnter * match IdeographicSpace /　\|\s\+$/
+  autocmd ColorScheme,WinEnter * match IdeographicSpace /　\|\s\+$/
 augroup END
 #}}}
 
-# github.com/satorunooshie/pairscolorscheme
-try
-  colorscheme pairs
-catch /E185/
-  # Install if not found.
-  const colors_dir_path = expand('~/.vim/colors/')
-  MkdirIfNotExists(colors_dir_path)
-  system('git clone --depth 1 --recursive https://github.com/satorunooshie/pairscolorscheme ' .. colors_dir_path .. 'pairs')
-  system('mv ' .. colors_dir_path .. 'pairs/colors/pairs.vim ' ..  colors_dir_path .. 'pairs.vim')
-  colorscheme pairs
-endtry
+def ApplyColorscheme(timer: number): void
+  try
+    colorscheme pairs # github.com/satorunooshie/pairscolorscheme
+  catch /E185/ # Install if not found.
+    echomsg 'Installing pairscolorscheme...'
+    const colors_dir_path = expand('~/.vim/colors/')
+    MkdirIfNotExists(colors_dir_path)
+    silent! call system('git clone --depth 1 --recursive https://github.com/satorunooshie/pairscolorscheme ' .. colors_dir_path .. 'pairs')
+    silent! call system('mv ' .. colors_dir_path .. 'pairs/colors/pairs.vim ' ..  colors_dir_path .. 'pairs.vim')
+
+    echomsg 'Installed pairscolorscheme successfully.'
+    colorscheme pairs
+  endtry
+
+  # Note: Syntax generates based on settings in runtimepath
+  # so it is nececcary to initialize runtimepath and
+  # load file type highlight plugins prior to syntax on.
+  syntax on
+enddef
+
+autocmd MyVimrcCmd VimEnter * timer_start(50, ApplyColorscheme)
 #}}}
 
 # ---------------------------------------------------------------------------
