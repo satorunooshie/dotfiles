@@ -39,9 +39,8 @@ $PACKPATH = expand('~/.vim/pack/Bundle')
 final plugins: dict<list<string>> = {'start': [], 'opt': []}
 # Skip loading plugins in the start directory, because they are loaded
 # automatically.
-add(plugins.start, 'https://github.com/kana/vim-textobj-user')
-add(plugins.start, 'https://github.com/kana/vim-operator-user')
-
+add(plugins.opt, 'https://github.com/kana/vim-textobj-user')
+add(plugins.opt, 'https://github.com/kana/vim-operator-user')
 add(plugins.opt, 'https://github.com/vim-jp/vimdoc-ja')
 add(plugins.opt, 'https://github.com/mhinz/vim-signify')
 add(plugins.opt, 'https://github.com/kana/vim-textobj-indent')
