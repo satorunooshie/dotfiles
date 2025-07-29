@@ -29,6 +29,9 @@ scriptencoding utf-8
 # overwrite default setting
 set viminfo=<100,h,s100,'1000,:100
 
+# Don't give the intro message when starting Vim.
+set shortmess+=I
+
 # ---------------------------------------------------------------------------
 # Load Plugins: #{{{
 #
