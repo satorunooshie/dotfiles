@@ -24,7 +24,11 @@ scriptencoding utf-8
 # Note: Syntax generates based on settings in runtimepath
 # so it is nececcary to initialize runtimepath and
 # load file type highlight plugins prior to syntax on.
-syntax on
+def SyntaxOn(timer: number): void
+  syntax on
+enddef
+
+autocmd MyVimrcCmd VimEnter * timer_start(1, function('SyntaxOn'))
 
 # <: Maximum number of lines saved for each register.
 # h: 'hlsearch' highlighting will not be restored.
