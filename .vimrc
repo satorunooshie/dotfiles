@@ -206,7 +206,7 @@ def PackAddHandler(timer: number) #{{{
 enddef #}}}
 
 if has('vim_starting') && has('timers')
-  autocmd MyVimrcCmd VimEnter * timer_start(1, PackAddHandler, {'repeat': len(plugins.opt)})
+  autocmd MyVimrcCmd VimEnter * timer_start(15, PackAddHandler, {'repeat': len(plugins.opt)})
 endif
 
 # For ftdetect scripts to be loaded, need to write AFTER all `packadd!` commands.
