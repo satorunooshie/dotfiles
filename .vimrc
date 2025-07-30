@@ -197,6 +197,12 @@ def PackAddHandler(timer: number) #{{{
 
   ++pidx
   if pidx == len(plugins.opt)
+    # Install fzf.
+    if executable('fzf')
+      set rtp+=/opt/homebrew/opt/fzf
+      runtime plugin/fzf.vim
+    endif
+
     packadd comment
     packadd cfilter
     # Extended % matching.
@@ -213,9 +219,6 @@ def PackAddHandler(timer: number) #{{{
       execute 'SignifyEnable'
     catch /E492/
     endtry
-
-    # Install fzf.
-    set rtp+=/opt/homebrew/opt/fzf
   endif
 enddef #}}}
 
