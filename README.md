@@ -3,7 +3,7 @@ Vim configuration files, maintained for macOS.
 
 Includes a custom color scheme and plugin setup using Vim's native package system.
 
-📄 [View the latest Vim startup time report](https://gist.github.com/satorunooshie/23f13f7ddec85107fb2357f08f03ab1e)
+📄 [View the latest Vim startup time report](https://gist.github.com/satorunooshie/55b12bef91300753155c38dcf0a0284c)
 
 ---
 
@@ -27,7 +27,7 @@ vim -c 'call UpdatePackPlugins()' -c 'sleep 5' -c 'quitall!'
 ## Startup Time Benchmarking
 Startup time is measured using [vim-startuptime](https://github.com/rhysd/vim-startuptime), automatically run via GitHub Actions on every push to main.
 
-Benchmark results are published as a badge (top of this page) and as Markdown reports in the [Gist](https://gist.github.com/satorunooshie/23f13f7ddec85107fb2357f08f03ab1e).
+Benchmark results are published as [a badge (top of this page)](https://gist.github.com/satorunooshie/23f13f7ddec85107fb2357f08f03ab1e) and as Markdown reports in the [Gist](https://gist.github.com/satorunooshie/55b12bef91300753155c38dcf0a0284c).
 
 ---
 
