@@ -83,10 +83,10 @@ jobs:
           echo "# Vim Startup Time Report 🚀" > summary.md
           echo "" >> summary.md
           echo "**Date**: $timestamp  " >> summary.md
-          echo "**Vim Version**: $vim_version" >> summary.md
+          echo "**Vim Version**: $vim_version  " >> summary.md
           echo "**Runner**: $runner_os  " >> summary.md
-          echo "\`$image_info\`" >> summary.md
-          echo "**Commit**: [\`${commit_sha:0:7}\`]($commit_url)" >> summary.md
+          echo "\`$image_info\`  " >> summary.md
+          echo "**Commit**: [\`${commit_sha:0:7}\`]($commit_url)  " >> summary.md
           echo "" >> summary.md
           echo "| AVERAGE (ms) | MAX (ms) | MIN (ms) | FILE |" >> summary.md
           echo "|--------------|----------|----------|------|" >> summary.md
@@ -106,5 +106,5 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${GIST_TOKEN}" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
-            https://api.github.com/gists/23f13f7ddec85107fb2357f08f03ab1e \
+            https://api.github.com/gists/55b12bef91300753155c38dcf0a0284c \
             -d "$gist_payload"
