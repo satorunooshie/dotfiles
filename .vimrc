@@ -877,7 +877,15 @@ nnoremap <silent> <Space>rv <Cmd>source $MYVIMRC<CR>
 # right.
 inoremap \# X<C-H><C-V>#
 nnoremap <silent> <Space>cl <Cmd>call popup_clear()<CR>
+nnoremap <silent> <Space>cc <Cmd>cclose<CR>
 nnoremap <silent> <Space>hc <Cmd>helpclose<CR>
+nnoremap <silent> <Space>to <Cmd>tabonly<CR>
+nnoremap <silent> <Space>tc <Cmd>tabclose<CR>
+nnoremap <silent> <Space>tn <Cmd>tabnew<CR>
+
+nnoremap <silent> <Space>vn <Cmd>vnew<CR>
+nnoremap <silent> <Space>vm <Cmd>vert MRU<CR>
+
 nnoremap <silent> <C-n> <Cmd>bnext<CR>
 nnoremap <silent> <C-p> <Cmd>bprev<CR>
 nnoremap <silent> <C-k> {
@@ -890,7 +898,7 @@ nnoremap <silent> <C-l> <Cmd>tabnext<CR>
 nnoremap <Space>op <Cmd>set paste! paste?<CR>
 nnoremap <Space>on <Cmd>setlocal number! cursorline! number? cursorline?<CR>
 nnoremap <Space>ol <Cmd>setlocal list! list?<CR>
-nnoremap <ESC><ESC> :nohlsearch<CR>
+nnoremap <ESC><ESC> <Cmd>nohlsearch<CR>
 
 nnoremap <silent> <Space>wd <Cmd>windo diffthis<CR>
 # Browse oldfiles filtered by pattern.
@@ -904,6 +912,9 @@ xnoremap <expr> r mode() ==# 'V' ? "\<C-v>0o$r" : "r"
 # Enable repeatedly increment or decrement in visual mode.
 vnoremap <c-a> <c-a>gv
 vnoremap <c-x> <c-x>gv
+
+nnoremap J gJ
+nnoremap gJ J
 
 # Disable overridding the register in visual mode.
 vnoremap p "_dP
