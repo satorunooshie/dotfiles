@@ -898,7 +898,7 @@ nnoremap <silent> <C-l> <Cmd>tabnext<CR>
 nnoremap <Space>op <Cmd>set paste! paste?<CR>
 nnoremap <Space>on <Cmd>setlocal number! cursorline! number? cursorline?<CR>
 nnoremap <Space>ol <Cmd>setlocal list! list?<CR>
-nnoremap <ESC><ESC> <Cmd>nohlsearch<CR>
+nnoremap <silent> <ESC> :nohlsearch<CR>
 
 nnoremap <silent> <Space>wd <Cmd>windo diffthis<CR>
 # Browse oldfiles filtered by pattern.
