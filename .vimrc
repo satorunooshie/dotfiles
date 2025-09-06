@@ -18,9 +18,6 @@ g:loaded_getscriptPlugin   = 1
 g:loaded_spellfile_plugin  = 1
 g:loaded_tutor_mode_plugin = 1
 g:loaded_remote_plugins    = 1
-# Disable colorresp.vim: prevents Vim from automatically changing 'background'
-# based on terminal OSC 10/11 replies.
-g:loaded_colorresp = 1
 
 augroup MyVimrcCmd
   autocmd!
