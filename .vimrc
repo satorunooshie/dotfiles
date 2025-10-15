@@ -997,8 +997,7 @@ xnoremap iu i]
 # :TCD to the directory of the current file or specified path.
 nnoremap <silent> <Space>cd <Cmd>TCD<CR>
 # Copy current path.
-# Use system() to avoid showing `Press ENTER or type command to continue` message.
-nnoremap <silent> <Space>cp <Cmd>call system('echo ' .. expand('%') .. ' \| pbcopy')<CR>
+nnoremap <silent> <C-g><C-g> 2<C-g><Cmd>let @+=expand('%:p')<CR>
 # Format json.
 nnoremap <silent> <Space>jq <Cmd>%!jq '.'<CR>
 # Force save.
