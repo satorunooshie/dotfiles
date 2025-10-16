@@ -917,8 +917,13 @@ nnoremap J gJ
 nnoremap gJ J
 
 # Disable overridding the register in visual mode.
-vnoremap p "_dP
-vnoremap P "_dp
+vnoremap p "_d]P
+vnoremap P "_d[p
+# Paste with indent adjustment.
+nnoremap p ]p
+nnoremap P [p
+nnoremap gp ]p`]
+nnoremap gP [p`[
 # Disable overridding the register in normal mode.
 nnoremap s "_s
 nnoremap c "_c
