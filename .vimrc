@@ -484,7 +484,7 @@ def! g:LightTabLine(): string
   return '%#TabLine#%1T[' .. pathshorten(curbuf !=# '' ? curbuf : '[No Name]') .. ']%T%#TabLineFill#%T'
 enddef
 
-def! g:SetupFullTabLine(): void
+def SetupFullTabLine(): void
   set tabline=%!MakeTabLine()
 enddef
 
@@ -513,7 +513,7 @@ enddef #}}}
 
 set tabline=%!LightTabLine()
 
-autocmd MyVimrcCmd CursorMoved * ++once call g:SetupFullTabLine()
+autocmd MyVimrcCmd CursorMoved * ++once SetupFullTabLine()
 #}}}
 
 # StatusLine settings. #{{{
@@ -617,8 +617,8 @@ def ApplyFullStatusLine(): void #{{{
   # Normal operation.
   augroup StatusLine #{{{
     autocmd!
-    autocmd BufEnter * call SetFullStatusLine()
-    autocmd BufLeave,BufNew,BufRead,BufNewFile * call SetFullStatusLine()
+    autocmd BufEnter * SetFullStatusLine()
+    autocmd BufLeave,BufNew,BufRead,BufNewFile * SetFullStatusLine()
     # autocmd BufLeave,BufNew,BufRead,BufNewFile * SetSimpleStatusLine()
   augroup END #}}}
 enddef #}}}
@@ -1092,7 +1092,7 @@ nnoremap <silent> <Space>tac <Cmd>call g:ToggleAsyncompleteForFiletype()<CR>
 # Apply asyncomplete settings to the current buffer if the filetype is
 # enabled.
 # Handle exceptions raised by lazy loading of plugins.
-def! g:ApplyAsyncompleteSettingByFileType() #{{{
+def ApplyAsyncompleteSettingByFileType() #{{{
   const enabled = get(g:asyncomplete_enabled_filetype, &ft, 0)
   if enabled
     try
@@ -1113,7 +1113,7 @@ enddef #}}}
 # filetype remains the same.
 augroup AsyncompleteFiletypeToggle
   autocmd!
-  autocmd BufEnter * call g:ApplyAsyncompleteSettingByFileType()
+  autocmd BufEnter * ApplyAsyncompleteSettingByFileType()
 augroup END
 #}}}
 
