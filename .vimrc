@@ -249,8 +249,6 @@ set nobackup
 set pumheight=15
 # Display the completion matches using the popup menu.
 set wildoptions=pum
-# Register '*' and '+' for all yank, delete, change and put operations.
-set clipboard=unnamed,unnamedplus
 set tabstop=2
 set softtabstop=2
 set shiftwidth=2
@@ -291,6 +289,76 @@ set formatoptions-=ro
 # Prevent overwriting format options.
 autocmd MyVimrcCmd FileType * setlocal formatoptions-=ro
 set nrformats=alpha,hex,bin,unsigned
+
+# clipboard: #{{{
+# Clipboard provider for pbcopy/pbpaste.
+# See :help clipboard-provider.
+if has('clipboard_provider') && executable('pbpaste') && executable('pbcopy')
+  # Keep track of the last used register type for '*' and '+'
+  final last_regtype: dict<string> = { '*': 'v', '+': 'v' }
+
+  # Return the available registers. pbcopy/pbpaste share the same pasteboard.
+  def PB_Available(): string
+    return '+*'
+  enddef
+
+  # Paste callback.
+  # reg: '*' or '+'
+  # accessType: 'explicit' or 'implicit'
+  #
+  # Called when Vim needs to read from the clipboard.
+  # For implicit access (e.g. when showing :registers or accessing the
+  # clipboard indirectly), return "previous" to avoid unnecessary pbpaste calls.
+  # This prevents performance overhead and permission prompts.
+  # For explicit access (e.g. put, getreg()), return [regtype, lines] as required
+  # by :help clipboard-provider-paste.
+  def PB_Paste(reg: string, accessType: string): any
+    if accessType ==# 'implicit'
+      return 'previous'
+    endif
+
+    var lines: list<string> = systemlist('pbpaste')
+    if v:shell_error
+      return 'previous'
+    endif
+
+    # Normalize CRLF to LF and remove trailing CR.
+    def NormalizeCRLF(l: list<string>): list<string>
+      return mapnew(l, (_, v) => substitute(v, '\r\(\n\)\@=', '', 'g'))
+    enddef
+
+    lines = NormalizeCRLF(lines)
+    var reg_type: string = get(last_regtype, reg, 'v')
+    return [reg_type, lines]
+  enddef
+
+  # Copy callback
+  # - reg: '*' or '+'
+  # - regtype: 'v', 'V', or "<C-V>"
+  # - lines: list of yanked lines
+  # Store the register type for later, and pass the joined text to pbcopy.
+  # For linewise yanks, add a final newline to match Vim's setreg() behavior.
+  def PB_Copy(reg: string, regtype: string, lines: list<string>)
+    last_regtype[reg] = regtype
+    var payload: string = join(lines, "\n") .. (regtype ==# 'V' ? "\n" : '')
+    system('pbcopy', payload)
+  enddef
+
+  # Register the clipboard provider.
+  # Both '+' and '*' use the same functions since they map to the same macOS pasteboard.
+  v:clipproviders.pb = {
+        available: function('PB_Available'),
+        paste: { '+': function('PB_Paste'), '*': function('PB_Paste') },
+        copy:  { '+': function('PB_Copy'),  '*': function('PB_Copy')  },
+  }
+
+  # Make pb the preferred clipboard provider.
+  set clipmethod=pb,gui,x11,wayland
+endif
+# Register '*' and '+' for all yank, delete, change and put operations.
+# unnamedplus is available when +xterm_clipboard / +wayland_clipboard / gui_running.
+set clipboard=unnamed,unnamedplus
+#}}}
 
 # tags: #{{{
 # ctags
