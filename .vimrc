@@ -419,8 +419,8 @@ def ApplyColorscheme(timer: number): void
     echomsg 'Installing pairscolorscheme...'
     const colors_dir_path = expand('~/.vim/colors/')
     MkdirIfNotExists(colors_dir_path)
-    silent! call system('git clone --depth 1 --recursive https://github.com/satorunooshie/pairscolorscheme ' .. colors_dir_path .. 'pairs')
-    silent! call system('mv ' .. colors_dir_path .. 'pairs/colors/pairs.vim ' ..  colors_dir_path .. 'pairs.vim')
+    silent! system('git clone --depth 1 --recursive https://github.com/satorunooshie/pairscolorscheme ' .. colors_dir_path .. 'pairs')
+    silent! system('mv ' .. colors_dir_path .. 'pairs/colors/pairs.vim ' ..  colors_dir_path .. 'pairs.vim')
 
     echomsg 'Installed pairscolorscheme successfully.'
     colorscheme pairs
