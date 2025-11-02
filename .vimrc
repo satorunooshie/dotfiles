@@ -986,6 +986,8 @@ vnoremap <c-x> <c-x>gv
 nnoremap J gJ
 nnoremap gJ J
 
+nnoremap gf gF
+
 # Disable overridding the register in visual mode.
 vnoremap p "_dP
 vnoremap P "_dp
