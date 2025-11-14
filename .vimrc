@@ -968,7 +968,17 @@ nnoremap <Space>on <Cmd>setlocal number! cursorline! number? cursorline?<CR>
 nnoremap <Space>ol <Cmd>setlocal list! list?<CR>
 nnoremap <silent> <ESC> :nohlsearch<CR>
 
-nnoremap <silent> <Space>wd <Cmd>windo diffthis<CR>
+nnoremap <silent> <Space>wd <Cmd>call ToggleDiff()<CR>
+def! g:ToggleDiff()
+  for w in range(1, winnr('$'))
+    if getwinvar(w, '&diff')
+      windo diffoff
+      return
+    endif
+  endfor
+  windo diffthis
+enddef
+
 # Browse oldfiles filtered by pattern.
 nnoremap <Leader>e :<C-u>/ oldfiles<Home>browse filter /
 nnoremap <Space>b :<C-u>buffer <C-d>
