@@ -50,53 +50,65 @@ set shortmess+=I
 # ---------------------------------------------------------------------------
 # Load Plugins: #{{{
 #
-$PACKPATH = expand('~/.vim/pack/Bundle')
-final plugins: dict<list<string>> = {'start': [], 'opt': []}
+def AddPlugins(urls: list<string>): list<string>
+  var plugins = []
+  for url in urls
+    add(plugins, url)
+  endfor
+  return plugins
+enddef
+
 # Skip loading plugins in the start directory, because they are loaded
 # automatically.
-add(plugins.opt, 'https://github.com/kana/vim-textobj-user')
-add(plugins.opt, 'https://github.com/kana/vim-operator-user')
-add(plugins.opt, 'https://github.com/vim-jp/vimdoc-ja')
-add(plugins.opt, 'https://github.com/mhinz/vim-signify')
-add(plugins.opt, 'https://github.com/kana/vim-textobj-indent')
-add(plugins.opt, 'https://github.com/kana/vim-textobj-syntax')
-add(plugins.opt, 'https://github.com/kana/vim-textobj-line')
-add(plugins.opt, 'https://github.com/kana/vim-textobj-fold')
-add(plugins.opt, 'https://github.com/kana/vim-textobj-entire')
-add(plugins.opt, 'https://github.com/thinca/vim-textobj-between')
-add(plugins.opt, 'https://github.com/thinca/vim-textobj-comment')
-add(plugins.opt, 'https://github.com/h1mesuke/textobj-wiw')
-add(plugins.opt, 'https://github.com/sgur/vim-textobj-parameter')
-add(plugins.opt, 'https://github.com/kana/vim-operator-replace')
-add(plugins.opt, 'https://github.com/tpope/vim-surround')
-# Make blockwise visual mode more useful.
-# ex) shift v + shift i.
-add(plugins.opt, 'https://github.com/kana/vim-niceblock')
-add(plugins.opt, 'https://github.com/knsh14/vim-github-link')
-add(plugins.opt, 'https://github.com/prabirshrestha/vim-lsp')
-add(plugins.opt, 'https://github.com/mattn/vim-lsp-settings')
-add(plugins.opt, 'https://github.com/prabirshrestha/asyncomplete.vim')
-add(plugins.opt, 'https://github.com/prabirshrestha/asyncomplete-lsp.vim')
-add(plugins.opt, 'https://github.com/github/copilot.vim')
-add(plugins.opt, 'https://github.com/Eliot00/git-lens.vim.git')
-add(plugins.opt, 'https://github.com/thinca/vim-quickrun')
-add(plugins.opt, 'https://github.com/thinca/vim-qfreplace')
-add(plugins.opt, 'https://github.com/itchyny/vim-qfedit')
-# Live preview substitute result and
-# highlight patterns and ranges for Ex commands in Command-line mode.
-add(plugins.opt, 'https://github.com/markonm/traces.vim')
-# Star for visual mode.
-# ex) shift v + *.
-add(plugins.opt, 'https://github.com/thinca/vim-visualstar')
-add(plugins.opt, 'https://github.com/mattn/vim-maketable')
-# Highlight each by a different color.
-add(plugins.opt, 'https://github.com/daisuzu/rainbowcyclone.vim')
-# Prettyprint vim variables.
-# ex) :PP.
-add(plugins.opt, 'https://github.com/thinca/vim-prettyprint')
-add(plugins.opt, 'https://github.com/thinca/vim-showtime')
-add(plugins.opt, 'https://github.com/LeafCage/vimhelpgenerator')
-add(plugins.opt, 'https://github.com/lifepillar/vim-colortemplate')
+$PACKPATH = expand('~/.vim/pack/Bundle')
+final plugins: dict<list<string>> = {
+  'start': [],
+  'opt': AddPlugins([
+    'https://github.com/kana/vim-textobj-user',
+    'https://github.com/kana/vim-operator-user',
+    'https://github.com/vim-jp/vimdoc-ja',
+    'https://github.com/mhinz/vim-signify',
+    'https://github.com/kana/vim-textobj-indent',
+    'https://github.com/kana/vim-textobj-syntax',
+    'https://github.com/kana/vim-textobj-line',
+    'https://github.com/kana/vim-textobj-fold',
+    'https://github.com/kana/vim-textobj-entire',
+    'https://github.com/thinca/vim-textobj-between',
+    'https://github.com/thinca/vim-textobj-comment',
+    'https://github.com/h1mesuke/textobj-wiw',
+    'https://github.com/sgur/vim-textobj-parameter',
+    'https://github.com/kana/vim-operator-replace',
+    'https://github.com/tpope/vim-surround',
+    # Make blockwise visual mode more useful.
+    # ex) shift v + shift i.
+    'https://github.com/kana/vim-niceblock',
+    'https://github.com/knsh14/vim-github-link',
+    'https://github.com/prabirshrestha/vim-lsp',
+    'https://github.com/mattn/vim-lsp-settings',
+    'https://github.com/prabirshrestha/asyncomplete.vim',
+    'https://github.com/prabirshrestha/asyncomplete-lsp.vim',
+    'https://github.com/github/copilot.vim',
+    'https://github.com/Eliot00/git-lens.vim.git',
+    'https://github.com/thinca/vim-quickrun',
+    'https://github.com/thinca/vim-qfreplace',
+    'https://github.com/itchyny/vim-qfedit',
+    # Live preview substitute result and
+    # highlight patterns and ranges for Ex commands in Command-line mode.
+    'https://github.com/markonm/traces.vim',
+    # Star for visual mode.
+    # ex) shift v + *.
+    'https://github.com/thinca/vim-visualstar',
+    'https://github.com/mattn/vim-maketable',
+    # Highlight each by a different color.
+    'https://github.com/daisuzu/rainbowcyclone.vim',
+    # Prettyprint vim variables.
+    # ex) :PP.
+    'https://github.com/thinca/vim-prettyprint',
+    'https://github.com/thinca/vim-showtime',
+    'https://github.com/LeafCage/vimhelpgenerator',
+    'https://github.com/lifepillar/vim-colortemplate',
+  ]),
+}
 
 def CreateHelpTags(path: string): void
   if isdirectory(path)
