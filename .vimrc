@@ -222,11 +222,6 @@ def PackAddHandler(timer: number) #{{{
     # For filetype plugin.
     doautocmd FileType
 
-    try # For lsp-settings.
-      lsp_settings#init()
-    catch /E117/
-    endtry
-
     try # For vim-lsp.
       lsp#enable()
     catch /E117/
@@ -884,7 +879,6 @@ imap <C-C><C-P> <Plug>(copilot-previous)
 # ---------------------------------------------------------------------------
 # vim-lsp: #{{{
 #
-g:lsp_auto_enable = 0
 g:lsp_fold_enabled = 0
 g:lsp_diagnostics_echo_cursor = 1
 g:lsp_diagnostics_virtual_text_enabled = 0
