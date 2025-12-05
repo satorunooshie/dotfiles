@@ -750,7 +750,7 @@ command! FilesCurrent <mods> Files .
 
 # Filter files that are not readable and not in the git repository if it exists.
 def FilterFiles(files: list<string>): list<string> #{{{
-  return files->filter((_, v: string) => v->expand()->filereadable())->mapnew((_, v: string) => v->trim()->expand()->substitute(expand('$HOME'), '~', ''))->filter((_, v: string) => (empty(git_root) || expand(v) =~# git_root) && v !~# '\.git/')
+  return files->copy()->filter((_, v: string) => v->expand()->filereadable())->mapnew((_, v: string) => v->trim()->expand()->substitute(expand('$HOME'), '~', ''))->filter((_, v: string) => (empty(git_root) || expand(v) =~# git_root) && v !~# '\.git/')
 enddef #}}}
 command! MRU <mods> ModsNew MRU
   | SetGitRoot
