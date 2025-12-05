@@ -1044,10 +1044,20 @@ noremap <Space>l $
 # Move search results to the middle of the screen.
 nnoremap n nzz
 nnoremap N Nzz
-nnoremap * *zz
-nnoremap # #zz
-nnoremap g* g*zz
-nnoremap g# g#zz
+
+# Restore previous view after search without polluting the jumplist.
+nnoremap <silent><expr> *
+      \ v:count != 0 ? '*' :
+      \ ':silent execute "keepjumps normal! *" <Bar> call winrestview(' .. string(winsaveview()) .. ')<CR>'
+nnoremap <silent><expr> #
+      \ v:count != 0 ? '#' :
+      \ ':silent execute "keepjumps normal! #" <Bar> call winrestview(' .. string(winsaveview()) .. ')<CR>'
+nnoremap <silent><expr> g*
+      \ v:count != 0 ? 'g*' :
+      \ ':silent execute "keepjumps normal! g*" <Bar> call winrestview(' .. string(winsaveview()) .. ')<CR>'
+nnoremap <silent><expr> g#
+      \ v:count != 0 ? 'g#' :
+      \ ':silent execute "keepjumps normal! g#" <Bar> call winrestview(' .. string(winsaveview()) .. ')<CR>'
 
 # Move to the position previously changed or yanked.
 nnoremap mlc '[
