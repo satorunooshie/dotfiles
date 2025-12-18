@@ -535,6 +535,7 @@ set nowrap
 set showmatch
 # Tenths of a second to show the matching paren is 0.1 sec.
 set matchtime=1
+set matchpairs+=<:>,「:」,（:）,『:』,【:】,《:》,〈:〉,｛:｝,［:］,‘:’,“:”,«:»,‹:›
 # Always show status line.
 set laststatus=2
 # Always display the line with tab page labels.
