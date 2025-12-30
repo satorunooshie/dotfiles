@@ -973,6 +973,8 @@ vnoremap <silent> <C-j> }
 nnoremap <silent> <C-h> <Cmd>tabprev<CR>
 nnoremap <silent> <C-l> <Cmd>tabnext<CR>
 
+tnoremap <nowait> <C-\> <C-\><C-N>
+
 nnoremap <Space>op <Cmd>set paste! paste?<CR>
 nnoremap <Space>on <Cmd>setlocal number! cursorline! number? cursorline?<CR>
 nnoremap <Space>ol <Cmd>setlocal list! list?<CR>
