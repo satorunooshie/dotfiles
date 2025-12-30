@@ -310,8 +310,8 @@ if has('clipboard_provider') && executable('pbpaste') && executable('pbcopy')
   final last_regtype: dict<string> = { '*': 'v', '+': 'v' }
 
   # Return the available registers. pbcopy/pbpaste share the same pasteboard.
-  def PB_Available(): string
-    return '+*'
+  def PB_Available(): bool
+    return true
   enddef
 
   # Paste callback.
@@ -324,14 +324,11 @@ if has('clipboard_provider') && executable('pbpaste') && executable('pbcopy')
   # This prevents performance overhead and permission prompts.
   # For explicit access (e.g. put, getreg()), return [regtype, lines] as required
   # by :help clipboard-provider-paste.
-  def PB_Paste(reg: string, accessType: string): any
-    if accessType ==# 'implicit'
-      return 'previous'
-    endif
-
+  def PB_Paste(reg: string): list<any>
     var lines: list<string> = systemlist('pbpaste')
     if v:shell_error
-      return 'previous'
+      # On error, return empty content with the last used register type.
+      return [get(last_regtype, reg, 'v'), []]
     endif
 
     # Normalize CRLF to LF and remove trailing CR.
@@ -340,8 +337,8 @@ if has('clipboard_provider') && executable('pbpaste') && executable('pbcopy')
     enddef
 
     lines = NormalizeCRLF(lines)
-    var reg_type: string = get(last_regtype, reg, 'v')
-    return [reg_type, lines]
+    var regtype: string = get(last_regtype, reg, 'v')
+    return [regtype, lines]
   enddef
 
   # Copy callback
@@ -359,13 +356,13 @@ if has('clipboard_provider') && executable('pbpaste') && executable('pbcopy')
   # Register the clipboard provider.
   # Both '+' and '*' use the same functions since they map to the same macOS pasteboard.
   v:clipproviders.pb = {
-        available: function('PB_Available'),
-        paste: { '+': function('PB_Paste'), '*': function('PB_Paste') },
-        copy:  { '+': function('PB_Copy'),  '*': function('PB_Copy')  },
+        available: PB_Available,
+        paste: { '+': PB_Paste, '*': PB_Paste },
+        copy:  { '+': PB_Copy,  '*': PB_Copy  },
   }
 
   # Make pb the preferred clipboard provider.
-  set clipmethod=pb,gui,x11,wayland
+  set clipmethod=pb,x11,wayland
 endif
 # Register '*' and '+' for all yank, delete, change and put operations.
 # unnamedplus is available when +xterm_clipboard / +wayland_clipboard / gui_running.
