@@ -6,6 +6,8 @@ vim9script
 #
 
 # Disable unused standard plugins.
+g:loaded_netrw             = 1
+g:loaded_netrwPlugin       = 1
 g:loaded_gzip              = 1
 g:loaded_tar               = 1
 g:loaded_tarPlugin         = 1
@@ -62,7 +64,9 @@ enddef
 # automatically.
 $PACKPATH = expand('~/.vim/pack/Bundle')
 final plugins: dict<list<string>> = {
-  'start': [],
+  'start': AddPlugins([
+    'https://github.com/satorunooshie/forge.vim',
+  ]),
   'opt': AddPlugins([
     'https://github.com/kana/vim-textobj-user',
     'https://github.com/kana/vim-operator-user',
