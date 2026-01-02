@@ -20,6 +20,7 @@ g:loaded_getscriptPlugin   = 1
 g:loaded_spellfile_plugin  = 1
 g:loaded_tutor_mode_plugin = 1
 g:loaded_remote_plugins    = 1
+g:loaded_openPlugin        = 1
 
 augroup MyVimrcCmd
   autocmd!
@@ -879,6 +880,11 @@ nnoremap <silent> <Space>tv <Cmd>tabedit $MYVIMRC<CR>
 nnoremap <silent> <Space>tl <Cmd>tabedit $MYLOCALVIMRC<CR>
 
 nnoremap <silent> <Space>rv <Cmd>source $MYVIMRC<CR>
+
+# Disable built-in openPlugin to reduce startup time.
+# Therefore, redefine gx.
+nnoremap <silent> gx <Cmd>call job_start(['open', expand('<cfile>')])<CR>
+xnoremap <silent> gx <Cmd>call job_start(['open', join(getregion(getpos('v'), getpos('.'), {'type': mode()}))])<CR>
 
 # Recommended by :help options.txt for indenting
 # When typing '#' as the first character in a new line, the indent for
