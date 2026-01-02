@@ -23,6 +23,7 @@ g:loaded_remote_plugins    = 1
 g:loaded_openPlugin        = 1
 g:loaded_matchparen        = 1
 g:loaded_2html_plugin      = 1
+g:loaded_manpager          = 1
 
 augroup MyVimrcCmd
   autocmd!
