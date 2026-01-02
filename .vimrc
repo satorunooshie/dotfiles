@@ -1047,6 +1047,61 @@ nnoremap <silent> <Leader>co <Cmd>call system('git checkout -- ' .. expand('%'))
 # ---------------------------------------------------------------------------
 # Plugins: #{{{
 #
+# forge.vim: #{{{
+def! g:ForgeOperateUnderCursor(op: string): void
+  const dir: string = forge#Curdir()
+  const name: string = substitute(getline('.'), '[/\\]$', '', '')
+  # forge#Curdir() always returns a path with a trailing slash.
+  const path: string = dir .. name
+  const completion: string = isdirectory(path) ? 'dir' : 'file'
+
+  var dst = ''
+  var cmd = ''
+  if op ==# 'copy'
+    dst = input('Copy to: ', dir, completion)
+    if dst ==# ''
+      return
+    endif
+    cmd = 'cp -a ' .. fnameescape(path) .. ' ' .. fnameescape(dst)
+  elseif op ==# 'move'
+    dst = input('Move to: ', dir, completion)
+    if dst ==# ''
+      return
+    endif
+    cmd = 'mv ' .. fnameescape(path) .. ' ' .. fnameescape(dst)
+  else
+    return
+  endif
+
+  const out = system(cmd)
+  histadd('cmd', 'call system("' .. cmd .. '")')
+  if v:shell_error
+    echoerr out
+    return
+  endif
+
+  forge#Reload()
+
+  var entry = {
+      'text': (op ==# 'copy'
+            ? '[cp] ' .. path .. ' -> ' .. dst
+            : '[mv] ' .. path .. ' -> ' .. dst),
+      'filename': dst,
+      'lnum': 0,
+      'type': 'I',
+  }
+  setqflist([entry], 'a')
+  setqflist([], 'r', {'title': 'Forge Extra Operations'})
+  silent copen 8 | wincmd p
+enddef
+
+augroup MyForgeCmd
+  autocmd!
+  autocmd FileType forge nnoremap <buffer> <Space>cp <Cmd>call ForgeOperateUnderCursor('copy')<CR>
+  autocmd FileType forge nnoremap <buffer> <Space>mv <Cmd>call ForgeOperateUnderCursor('move')<CR>
+augroup END
+#}}}
+
 # vim-quickrun: #{{{
 nmap <Leader>r <Plug>(quickrun)
 omap <Leader>r <Plug>(quickrun)
