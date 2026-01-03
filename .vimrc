@@ -1114,6 +1114,10 @@ augroup MyForgeCmd
   autocmd FileType forge nnoremap <buffer> <Space>cp <Cmd>call ForgeOperateUnderCursor('copy')<CR>
   autocmd FileType forge nnoremap <buffer> <Space>mv <Cmd>call ForgeOperateUnderCursor('move')<CR>
 augroup END
+augroup ForgeBlackholeDelete
+  autocmd!
+  autocmd FileType forge nnoremap <buffer> dd "_dd
+augroup END
 #}}}
 
 # vim-quickrun: #{{{
