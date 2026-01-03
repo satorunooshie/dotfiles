@@ -24,6 +24,7 @@ g:loaded_openPlugin        = 1
 g:loaded_matchparen        = 1
 g:loaded_2html_plugin      = 1
 g:loaded_manpager          = 1
+g:loaded_logiPat           = 1
 
 augroup MyVimrcCmd
   autocmd!
@@ -102,6 +103,7 @@ final plugins: dict<list<string>> = {
     'https://github.com/itchyny/vim-qfedit',
     # Replace the built-in matchparen for better performance.
     'https://github.com/itchyny/vim-parenmatch',
+    'https://github.com/satorunooshie/logicpat.vim',
     # Live preview substitute result and
     # highlight patterns and ranges for Ex commands in Command-line mode.
     'https://github.com/markonm/traces.vim',
@@ -148,6 +150,7 @@ def! g:InstallPackPlugins(): void #{{{
       echomsg 'installing: ' .. dst
       system('git clone --recursive ' .. url .. ' ' .. dst)
       CreateHelpTags(expand(dst .. '/doc/'))
+      echomsg 'Installed: ' .. dst
     endfor
   endfor
 enddef #}}}
