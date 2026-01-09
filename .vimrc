@@ -1046,6 +1046,20 @@ def RemapRainbowCycloneKeys(): void
 # nnoremap <Esc><Esc> <Cmd>RCReset<CR>:nohlsearch<CR>
 enddef
 #}}}
+
+# ---------------------------------------------------------------------------
+# vim-sandwich: #{{{
+#
+def RemapSandwichKeys(): void
+  g:sandwich_no_default_key_mappings = 1
+  nmap ys <Plug>(sandwich-add)
+  nmap ds <Plug>(sandwich-delete)
+  nmap dsb <Plug>(sandwich-delete-auto)
+  nmap cs <Plug>(sandwich-replace)
+  nmap csb <Plug>(sandwich-replace-auto)
+  xmap S  <Plug>(sandwich-add)
+enddef
+#}}}
 #}}}
 
 # ---------------------------------------------------------------------------
@@ -1085,6 +1099,7 @@ final plugins: dict<list<dict<any>>> = {
     'https://github.com/sgur/vim-textobj-parameter',
     'https://github.com/kana/vim-operator-replace',
   ]) +
+  AddPlugins(['https://github.com/machakann/vim-sandwich'], [function('RemapSandwichKeys')]) +
   AddPlugins(['https://github.com/thinca/vim-quickrun'], [function('QuickrunSettings'), function('RemapQuickrunKeys')]) +
   AddPlugins([
     'https://github.com/prabirshrestha/asyncomplete.vim',
