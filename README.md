@@ -1,7 +1,7 @@
 # github.com/satorunooshie/dotfiles [![startuptime](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fsatorunooshie%2F23f13f7ddec85107fb2357f08f03ab1e%2Fraw%2Fvim-startuptime.json)](https://github.com/satorunooshie/dotfiles/actions/workflows/vim-startuptime.yml?query=branch%3Amain)
 Vim configuration files, maintained for macOS.
 
-Includes a custom color scheme and plugin setup using Vim's native package system.
+Includes the custom colorscheme and plugin setup using Vim's native package system.
 
 📄 [View the latest Vim startup time report](https://gist.github.com/satorunooshie/55b12bef91300753155c38dcf0a0284c)
 
@@ -9,8 +9,8 @@ Includes a custom color scheme and plugin setup using Vim's native package syste
 
 ## Installation
 ```bash
-# Install plugins and the color scheme.
-vim -c 'call InstallPackPlugins()' -c 'sleep 10' -c 'quitall!'
+# Install plugins and the colorscheme.
+vim -c 'call InstallPackPlugins()'
 ```
 
 Requirements:
@@ -19,7 +19,7 @@ Requirements:
 
 ## Maintenance
 ```bash
-vim -c 'call UpdatePackPlugins()' -c 'sleep 5' -c 'quitall!'
+vim -c 'call UpdatePackPlugins()'
 ```
 
 ---
@@ -37,7 +37,7 @@ Benchmark results are published as [a badge (top of this page)](https://gist.git
 .
 ├── .vimrc                   # Vim configuration
 ├── colors/
-│   └── pairs.vim            # Custom color scheme
+│   └── pairs.vim            # Custom colorscheme
 ├── pack/
 │   └── ...                  # Plugins (native package structure)
 ```

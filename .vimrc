@@ -1080,25 +1080,17 @@ enddef
 # Load Plugins: #{{{
 #
 def AddPlugins(urls: list<string>, Postprocesses: list<func(): void> = []): list<dict<any>>
-  var plugins: list<dict<any>> = []
-  var last = len(urls) - 1
-
-  for i in range(len(urls))
-    var ps: list<func(): void> = []
-    if i == last && !empty(Postprocesses)
-      ps = copy(Postprocesses)
-    endif
-    add(plugins, {'url': urls[i], 'postprocesses': ps})
-  endfor
-
-  return plugins
+  return urls->mapnew((idx: number, url: string) => ({
+    'url': url,
+    'postprocesses': idx == len(urls) - 1 ? copy(Postprocesses) : [],
+  }))
 enddef
 
 # Skip loading plugins in the start directory, because they are loaded
 # automatically.
 $PACKPATH = expand('~/.vim/pack/Bundle')
 final plugins: dict<list<dict<any>>> = {
-  'start': AddPlugins(['https://github.com/satorunooshie/forge.vim'], [function('ForgeSettings')]),
+  'start': AddPlugins(['https://github.com/satorunooshie/forge.vim'], [ForgeSettings]),
   'opt': AddPlugins([
     'https://github.com/kana/vim-textobj-user',
     'https://github.com/kana/vim-operator-user',
@@ -1113,21 +1105,21 @@ final plugins: dict<list<dict<any>>> = {
     'https://github.com/sgur/vim-textobj-parameter',
     'https://github.com/kana/vim-operator-replace',
   ]) +
-  AddPlugins(['https://github.com/satorunooshie/vim-cursorword'], [function('CursorwordSettings')]) +
-  AddPlugins(['https://github.com/machakann/vim-sandwich'], [function('RemapSandwichKeys')]) +
-  AddPlugins(['https://github.com/thinca/vim-quickrun'], [function('QuickrunSettings'), function('RemapQuickrunKeys')]) +
+  AddPlugins(['https://github.com/satorunooshie/vim-cursorword'], [CursorwordSettings]) +
+  AddPlugins(['https://github.com/machakann/vim-sandwich'], [RemapSandwichKeys]) +
+  AddPlugins(['https://github.com/thinca/vim-quickrun'], [QuickrunSettings, RemapQuickrunKeys]) +
   AddPlugins([
     'https://github.com/prabirshrestha/asyncomplete.vim',
     'https://github.com/prabirshrestha/asyncomplete-lsp.vim',
-  ], [function('RemapAsyncompleteKeys')]) +
+  ], [RemapAsyncompleteKeys]) +
   AddPlugins([
     'https://github.com/prabirshrestha/vim-lsp',
     'https://github.com/mattn/vim-lsp-settings',
-  ], [function('LspSettings'), function('RemapLspKeys')]) +
-  AddPlugins(['https://github.com/Eliot00/git-lens.vim'], [function('GitLensSettings'), function('RemapGitLensKeys')]) +
-  AddPlugins(['https://github.com/mhinz/vim-signify'], [function('SignifySettings')]) +
-  AddPlugins(['https://github.com/daisuzu/rainbowcyclone.vim'], [function('RemapRainbowCycloneKeys')]) +
-  AddPlugins(['https://github.com/github/copilot.vim'], [function('RemapCopilotKeys')]) +
+  ], [LspSettings, RemapLspKeys]) +
+  AddPlugins(['https://github.com/Eliot00/git-lens.vim'], [GitLensSettings, RemapGitLensKeys]) +
+  AddPlugins(['https://github.com/mhinz/vim-signify'], [SignifySettings]) +
+  AddPlugins(['https://github.com/daisuzu/rainbowcyclone.vim'], [RemapRainbowCycloneKeys]) +
+  AddPlugins(['https://github.com/github/copilot.vim'], [RemapCopilotKeys]) +
   AddPlugins([
     # Make blockwise visual mode more useful.
     # ex: shift v + shift i.
@@ -1167,7 +1159,18 @@ def MkdirIfNotExists(path: string): void
   endif
 enddef
 
+def SetupLoggingBuffer(name: string): number
+  var prev = bufnr(name)
+  if prev != -1 | execute ':' .. prev .. 'bwipeout!' | endif
+  var nr = bufadd(name)
+  bufload(nr)
+  execute ':' .. nr .. 'sb'
+  ToScratch
+  return nr
+enddef
+
 def! g:InstallPackPlugins(): void
+  var tasks: list<dict<any>> = []
   # loop from `start` avoid dependency problems.
   for key in reverse(sort(keys(plugins)))
     const dir = expand($PACKPATH .. '/' .. key)
@@ -1175,110 +1178,188 @@ def! g:InstallPackPlugins(): void
 
     for plugin in plugins[key]
       const url = plugin.url
-      const dst = expand(dir .. '/' .. split(url, '/')[-1])
-      if isdirectory(dst)
-        # Plugin has already been installed.
-        continue
-      endif
-
-      echomsg 'installing: ' .. dst
-      system('git clone --recursive ' .. url .. ' ' .. dst)
-      CreateHelpTags(expand(dst .. '/doc/'))
-      echomsg 'installed: ' .. dst
+      const name = split(url, '/')[-1]
+      const dst = expand(dir .. '/' .. name)
+      add(tasks, {
+        'url': url,
+        'dst': dst,
+        'postprocesses': plugin.postprocesses,
+        'name': name,
+      })
     endfor
   endfor
-enddef
 
-def! g:UpdatePackPlugins(): void
-  var idx = 0
-  const bufname = 'vimrc://update/plugins'
-  # Needs escape not to use file-pattern.
-  var prevbuf: number = bufnr(bufname)
-  if prevbuf != -1
-    # Needs `:` before Ex command with range.
-    execute ':' .. prevbuf .. 'bwipeout!'
+  if empty(tasks)
+    echomsg 'All plugins are already installed.'
+    return
   endif
-  var nr: number = bufadd(bufname)
-  bufload(nr)
-  execute ':' .. nr .. 'sb'
-  ToScratch
 
-  def PluginUpdateHandler(timer: number): void
-    const plugin_dir = expand($PACKPATH .. '/' .. 'opt')
-    const plugin_url = plugins.opt[idx].url
-    const plugin_name = split(plugin_url, '/')[-1]
-    const dst = expand(plugin_dir .. '/' .. plugin_name)
+  const nr: number = SetupLoggingBuffer('vimrc://install/plugins')
 
-    def DisplayUpdatedPlugin(name: string, channel: channel, msg: string): void
-      appendbufline(nr, 0, name .. ': ' .. msg)
-    enddef
+  var idx = 0
+  var finished_count = 0
+  const total = len(tasks)
 
-    job_start(
-      'git -C ' .. dst .. ' pull --ff --ff-only',
-      {'callback': function(DisplayUpdatedPlugin, [plugin_name])},
-    )
+  def OnMessage(name: string, ch: any, msg: string): void
+    appendbufline(nr, 0, printf('[%-25s] %s', name, msg))
+  enddef
 
-    def UpdateHelpTags(): void
-      for key in keys(plugins)
-        var dir = expand($PACKPATH .. '/' .. key)
-
-        for spec in plugins[key]
-          const url = spec.url
-          const path = expand(dir .. '/' .. split(url, '/')[-1])
-          if !isdirectory(path)
-            # Plugin is not installed.
-            continue
-          endif
-
-          echomsg 'helptags: ' .. path
-          CreateHelpTags(expand(path .. '/doc/'))
-        endfor
+  def OnExit(name: string, path: string, postprocesses: list<func(): void>, job: any, status: number): void
+    ++finished_count
+    if status ==# 0
+      appendbufline(nr, 0, printf('[%-25s] Installed successfully.', name))
+      CreateHelpTags(expand(path .. '/doc/'))
+      execute 'packadd ' .. name
+      for Postprocess in postprocesses
+        Postprocess()
       endfor
-    enddef
+    elseif status ==# -1
+      # Plugin has already been installed.
+      appendbufline(nr, 0, printf('[%-25s] Already installed, skipped.', name))
+    else
+      appendbufline(nr, 0, printf('[%-25s] Failed to install (status: %d)', name, status))
+    endif
 
-    ++idx
-    if idx == len(plugins.opt)
-      UpdateHelpTags()
+
+    if finished_count == total
+      appendbufline(nr, 0, '--- All plugins have been installed ---')
     endif
   enddef
 
-  idx = 0
-  timer_start(100, function(PluginUpdateHandler), {'repeat': len(plugins.opt)})
+  def PluginInstallHandler(timer: number): void
+    const task = tasks[idx]
+    if isdirectory(task.dst)
+      OnExit(task.name, task.dst, task.postprocesses, null, -1)
+    else
+      job_start(
+        'git clone --recursive ' .. task.url .. ' ' .. task.dst,
+        {
+          'out_cb': function(OnMessage, [task.name]),
+          'err_cb': function(OnMessage, [task.name]),
+          'exit_cb': function(OnExit, [task.name, task.dst, task.postprocesses]),
+        },
+      )
+    endif
+    ++idx
+  enddef
+
+  timer_start(100, PluginInstallHandler, {'repeat': total})
 enddef
 
-var pidx = 0
-def PackAddHandler(timer: number)
-  const spec = plugins.opt[pidx]
-  const url = spec.url
-  const plugin_name = split(url, '/')[-1]
-
-  const plugin_path = expand($PACKPATH .. '/opt/' .. plugin_name)
-  if isdirectory(plugin_path)
-    execute 'packadd ' .. plugin_name
-    for Postprocess in spec.postprocesses
-      Postprocess()
+def! g:UpdatePackPlugins(): void
+  var tasks: list<dict<any>> = []
+  for [type, list] in items(plugins)
+    for plugin in list
+      const url = plugin.url
+      const name = split(url, '/')[-1]
+      const dir = expand($PACKPATH .. '/' .. type)
+      const dst = expand(dir .. '/' .. name)
+      add(tasks, {
+        'type': type,
+        'dst': dst,
+        'url': url,
+        'postprocesses': plugin.postprocesses,
+        'name': split(url, '/')[-1],
+      })
     endfor
+  endfor
+
+  if empty(tasks)
+    echomsg 'No plugins found.'
+    return
   endif
 
-  ++pidx
-  if pidx == len(plugins.opt)
-    # Install fzf.
-    if executable('fzf')
-      set rtp+=/opt/homebrew/opt/fzf
-      runtime plugin/fzf.vim
+  const nr: number = SetupLoggingBuffer('vimrc://update/plugins')
+
+  var idx = 0
+  var finished_count = 0
+  const total = len(tasks)
+
+  def OnMessage(name: string, ch: any, msg: string): void
+    appendbufline(nr, 0, printf('[%-25s] %s', name, msg))
+  enddef
+
+  def OnExit(name: string, job: any, status: number): void
+    ++finished_count
+    if status ==# 0
+      # Successfully updated.
+    elseif status ==# -1
+      # If not installed, treat it as completed and proceed with the count.
+      appendbufline(nr, 0, printf('[%-25s] Not installed, skipped.', name))
+    else
+      appendbufline(nr, 0, printf('[%-25s] Failed to update (status: %d)', name, status))
     endif
 
-    packadd comment
-    packadd cfilter
-    # Extended % matching.
-    packadd matchit
-    # For filetype plugin.
-    doautocmd FileType
-  endif
+    if finished_count == total
+      for task in tasks
+        echomsg 'helptags: ' .. task.dst
+        CreateHelpTags(expand(task.dst .. '/doc/'))
+      endfor
+      appendbufline(nr, 0, '--- All plugins have been updated. Please restart Vim to apply changes. ---')
+    endif
+  enddef
+
+  def PluginUpdateHandler(timer: number): void
+    const task = tasks[idx]
+    if isdirectory(task.dst)
+      job_start(
+        'git -C ' .. task.dst .. ' pull --ff --ff-only',
+        {
+          'out_cb': function(OnMessage, [task.name]),
+          'err_cb': function(OnMessage, [task.name]),
+          'exit_cb': function(OnExit, [task.name]),
+        },
+      )
+    else
+      OnExit(task.name, null, -1)
+    endif
+    ++idx
+  enddef
+
+  timer_start(100, PluginUpdateHandler, {'repeat': total})
+enddef
+
+def StartPackAdd(): void
+  var pidx = 0
+
+  def PackAddHandler(timer: number)
+    if pidx >= len(plugins.opt)
+      return
+    endif
+
+    const plugin = plugins.opt[pidx]
+    const url = plugin.url
+    const plugin_name = split(url, '/')[-1]
+
+    const plugin_path = expand($PACKPATH .. '/opt/' .. plugin_name)
+    if isdirectory(plugin_path)
+      execute 'packadd ' .. plugin_name
+      for Postprocess in plugin.postprocesses
+        Postprocess()
+      endfor
+    endif
+
+    ++pidx
+    if pidx == len(plugins.opt)
+      # Install fzf.
+      if executable('fzf')
+        set rtp+=/opt/homebrew/opt/fzf
+        runtime plugin/fzf.vim
+      endif
+
+      packadd comment
+      packadd cfilter
+      # Extended % matching.
+      packadd matchit
+      # For filetype plugin.
+      doautocmd FileType
+    endif
+  enddef
+  timer_start(15, PackAddHandler, {'repeat': len(plugins.opt)})
 enddef
 
 if has('vim_starting') && has('timers')
-  autocmd MyVimrcCmd VimEnter * timer_start(15, PackAddHandler, {'repeat': len(plugins.opt)})
+  autocmd MyVimrcCmd VimEnter * StartPackAdd()
 endif
 
 # For ftdetect scripts to be loaded, need to write AFTER all `packadd!` commands.
