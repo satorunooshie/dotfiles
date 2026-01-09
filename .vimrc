@@ -1048,6 +1048,20 @@ enddef
 #}}}
 
 # ---------------------------------------------------------------------------
+# vim-cursorword: #{{{
+#
+def CursorwordSettings(): void
+  g:cursorword_delay = 0
+  g:cursorword_clear_on_leave = 1
+  augroup MyCursorWord
+    autocmd!
+    autocmd InsertEnter * b:cursorword = 0 | call cursorword#clear()
+    autocmd InsertLeave * b:cursorword = 1
+  augroup END
+enddef
+#}}}
+
+# ---------------------------------------------------------------------------
 # vim-sandwich: #{{{
 #
 def RemapSandwichKeys(): void
@@ -1099,6 +1113,7 @@ final plugins: dict<list<dict<any>>> = {
     'https://github.com/sgur/vim-textobj-parameter',
     'https://github.com/kana/vim-operator-replace',
   ]) +
+  AddPlugins(['https://github.com/satorunooshie/vim-cursorword'], [function('CursorwordSettings')]) +
   AddPlugins(['https://github.com/machakann/vim-sandwich'], [function('RemapSandwichKeys')]) +
   AddPlugins(['https://github.com/thinca/vim-quickrun'], [function('QuickrunSettings'), function('RemapQuickrunKeys')]) +
   AddPlugins([
