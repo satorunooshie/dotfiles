@@ -2,7 +2,7 @@ vim9script
 # ---------------------------------------------------------------------------
 # .vimrc
 # ---------------------------------------------------------------------------
-# Initialize:#{{{
+# Initialize: #{{{
 #
 
 # Disable unused standard plugins.
@@ -53,207 +53,6 @@ set viminfo=<100,h,s100,'1000,:100
 
 # Don't give the intro message when starting Vim.
 set shortmess+=I
-
-# ---------------------------------------------------------------------------
-# Load Plugins: #{{{
-#
-def AddPlugins(urls: list<string>): list<string>
-  var plugins = []
-  for url in urls
-    add(plugins, url)
-  endfor
-  return plugins
-enddef
-
-# Skip loading plugins in the start directory, because they are loaded
-# automatically.
-$PACKPATH = expand('~/.vim/pack/Bundle')
-final plugins: dict<list<string>> = {
-  'start': AddPlugins([
-    'https://github.com/satorunooshie/forge.vim',
-  ]),
-  'opt': AddPlugins([
-    'https://github.com/kana/vim-textobj-user',
-    'https://github.com/kana/vim-operator-user',
-    'https://github.com/vim-jp/vimdoc-ja',
-    'https://github.com/mhinz/vim-signify',
-    'https://github.com/kana/vim-textobj-indent',
-    'https://github.com/kana/vim-textobj-syntax',
-    'https://github.com/kana/vim-textobj-line',
-    'https://github.com/kana/vim-textobj-fold',
-    'https://github.com/kana/vim-textobj-entire',
-    'https://github.com/thinca/vim-textobj-between',
-    'https://github.com/thinca/vim-textobj-comment',
-    'https://github.com/h1mesuke/textobj-wiw',
-    'https://github.com/sgur/vim-textobj-parameter',
-    'https://github.com/kana/vim-operator-replace',
-    'https://github.com/tpope/vim-surround',
-    # Make blockwise visual mode more useful.
-    # ex) shift v + shift i.
-    'https://github.com/kana/vim-niceblock',
-    'https://github.com/knsh14/vim-github-link',
-    'https://github.com/prabirshrestha/vim-lsp',
-    'https://github.com/mattn/vim-lsp-settings',
-    'https://github.com/prabirshrestha/asyncomplete.vim',
-    'https://github.com/prabirshrestha/asyncomplete-lsp.vim',
-    'https://github.com/github/copilot.vim',
-    'https://github.com/Eliot00/git-lens.vim.git',
-    'https://github.com/thinca/vim-quickrun',
-    'https://github.com/thinca/vim-qfreplace',
-    'https://github.com/itchyny/vim-qfedit',
-    # Replace the built-in matchparen for better performance.
-    'https://github.com/itchyny/vim-parenmatch',
-    'https://github.com/satorunooshie/logicpat.vim',
-    # Live preview substitute result and
-    # highlight patterns and ranges for Ex commands in Command-line mode.
-    'https://github.com/markonm/traces.vim',
-    # Star for visual mode.
-    # ex) shift v + *.
-    'https://github.com/thinca/vim-visualstar',
-    'https://github.com/mattn/vim-maketable',
-    # Highlight each by a different color.
-    'https://github.com/daisuzu/rainbowcyclone.vim',
-    # Prettyprint vim variables.
-    # ex) :PP.
-    'https://github.com/thinca/vim-prettyprint',
-    'https://github.com/thinca/vim-showtime',
-    'https://github.com/LeafCage/vimhelpgenerator',
-    'https://github.com/lifepillar/vim-colortemplate',
-  ]),
-}
-
-def CreateHelpTags(path: string): void
-  if isdirectory(path)
-    execute 'helptags ' .. path
-  endif
-enddef
-
-def MkdirIfNotExists(path: string): void
-  if !isdirectory(path)
-    mkdir(path, 'p')
-  endif
-enddef
-
-def! g:InstallPackPlugins(): void #{{{
-  # loop from `start` avoid dependency problems.
-  for key in reverse(sort(keys(plugins)))
-    const dir = expand($PACKPATH .. '/' .. key)
-    MkdirIfNotExists(dir)
-
-    for url in plugins[key]
-      const dst = expand(dir .. '/' .. split(url, '/')[-1])
-      if isdirectory(dst)
-        # Plugin has already been installed.
-        continue
-      endif
-
-      echomsg 'installing: ' .. dst
-      system('git clone --recursive ' .. url .. ' ' .. dst)
-      CreateHelpTags(expand(dst .. '/doc/'))
-      echomsg 'Installed: ' .. dst
-    endfor
-  endfor
-enddef #}}}
-
-def! g:UpdatePackPlugins(): void #{{{
-  var idx = 0
-  const bufname = 'vimrc://update/plugins'
-  # Needs escape not to use file-pattern.
-  var prevbuf: number = bufnr(bufname)
-  if prevbuf != -1
-    # Needs `:` before Ex command with range.
-    execute ':' .. prevbuf .. 'bwipeout!'
-  endif
-  var nr: number = bufadd(bufname)
-  bufload(nr)
-  execute ':' .. nr .. 'sb'
-  ToScratch
-
-  def PluginUpdateHandler(timer: number): void #{{{
-    const plugin_dir = expand($PACKPATH .. '/' .. 'opt')
-    const plugin_url = plugins.opt[idx]
-    const plugin_name = split(plugin_url, '/')[-1]
-    const dst = expand(plugin_dir .. '/' .. plugin_name)
-
-    def DisplayUpdatedPlugin(name: string, channel: channel, msg: string): void
-      appendbufline(nr, 0, name .. ': ' .. msg)
-    enddef
-
-    job_start(
-      'git -C ' .. dst .. ' pull --ff --ff-only',
-      {'callback': function(DisplayUpdatedPlugin, [plugin_name])},
-    )
-
-    def UpdateHelpTags(): void #{{{
-      for key in keys(plugins)
-        var dir = expand($PACKPATH .. '/' .. key)
-
-        for url in plugins[key]
-          const path = expand(dir .. '/' .. split(url, '/')[-1])
-          if !isdirectory(path)
-            # Plugin is not installed.
-            continue
-          endif
-
-          echomsg 'helptags: ' .. path
-          CreateHelpTags(expand(path .. '/doc/'))
-        endfor
-      endfor
-    enddef #}}}
-
-    ++idx
-    if idx == len(plugins.opt)
-      UpdateHelpTags()
-    endif
-  enddef #}}}
-
-  idx = 0
-  timer_start(100, function(PluginUpdateHandler), {'repeat': len(plugins.opt)})
-enddef #}}}
-
-var pidx = 0
-def PackAddHandler(timer: number) #{{{
-  const plugin_name = split(plugins.opt[pidx], '/')[-1]
-
-  const plugin_path = expand($PACKPATH .. '/opt/' .. plugin_name)
-  if isdirectory(plugin_path)
-    execute 'packadd ' .. plugin_name
-  endif
-
-  ++pidx
-  if pidx == len(plugins.opt)
-    # Install fzf.
-    if executable('fzf')
-      set rtp+=/opt/homebrew/opt/fzf
-      runtime plugin/fzf.vim
-    endif
-
-    packadd comment
-    packadd cfilter
-    # Extended % matching.
-    packadd matchit
-    # For filetype plugin.
-    doautocmd FileType
-
-    try # For vim-lsp.
-      lsp#enable()
-    catch /E117/
-    endtry
-
-    try # For vim-signify.
-      execute 'SignifyEnable'
-    catch /E492/
-    endtry
-  endif
-enddef #}}}
-
-if has('vim_starting') && has('timers')
-  autocmd MyVimrcCmd VimEnter * timer_start(15, PackAddHandler, {'repeat': len(plugins.opt)})
-endif
-
-# For ftdetect scripts to be loaded, need to write AFTER all `packadd!` commands.
-filetype plugin indent on
-#}}}
 
 # ---------------------------------------------------------------------------
 # Mouse: #{{{
@@ -314,6 +113,32 @@ set formatoptions-=ro
 # Prevent overwriting format options.
 autocmd MyVimrcCmd FileType * setlocal formatoptions-=ro
 set nrformats=alpha,hex,bin,unsigned
+autocmd MyVimrcCmd InsertLeave * if &paste | set nopaste | endif
+#}}}
+
+# tags: #{{{
+# ctags
+set tags=./tags
+set tags+=tags;
+set tags+=./**/tags
+#}}}
+
+# grep: #{{{
+set grepprg=git\ grep\ --no-color\ -n\ --column\ --untracked
+set grepformat=%f:%l:%c:%m,%f:%l:%m
+# Cannot be used --no-index and --untracked at the same time.
+# --no-index: for not using git repository.
+command! UseGitGrepNoIndex setlocal grepprg=git\ grep\ --no-color\ -n\ --column\ --no-index
+command! UseDefaultGitGrep set grepprg=git\ grep\ --no-color\ -n\ --column\ --untracked
+#}}}
+
+# Quickfix: #{{{
+# Open a new tab when jumping to a quickfix item, splitting buffers, using stag,
+# CTRL-W_f or CTRL-W_F.
+set switchbuf=newtab
+# Open quickfix window automatically.
+autocmd MyVimrcCmd QuickfixCmdPre make,grep,grepadd,vimgrep,vimgrepadd,helpgrep copen
+#}}}
 
 # clipboard: #{{{
 # Clipboard provider for pbcopy/pbpaste.
@@ -382,33 +207,6 @@ endif
 set clipboard=unnamed,unnamedplus
 #}}}
 
-# tags: #{{{
-# ctags
-set tags=./tags
-set tags+=tags;
-set tags+=./**/tags
-#}}}
-
-# grep: #{{{
-set grepprg=git\ grep\ --no-color\ -n\ --column\ --untracked
-set grepformat=%f:%l:%c:%m,%f:%l:%m
-# Cannot be used --no-index and --untracked at the same time.
-# --no-index: for not using git repository.
-command! UseGitGrepNoIndex setlocal grepprg=git\ grep\ --no-color\ -n\ --column\ --no-index
-command! UseDefaultGitGrep set grepprg=git\ grep\ --no-color\ -n\ --column\ --untracked
-#}}}
-
-# Quickfix: #{{{
-# Open a new tab when jumping to a quickfix item, splitting buffers, using stag,
-# CTRL-W_f or CTRL-W_F.
-set switchbuf=newtab
-# Open quickfix window automatically.
-autocmd MyVimrcCmd QuickfixCmdPre make,grep,grepadd,vimgrep,vimgrepadd,helpgrep copen
-#}}}
-
-autocmd MyVimrcCmd InsertLeave * if &paste | set nopaste | endif
-#}}}
-
 # ---------------------------------------------------------------------------
 # Color: #{{{
 #
@@ -420,7 +218,7 @@ if &term =~# 'xterm'
   &t_EI = "\<Esc>[1 q"
 endif
 
-# Visualization of the spaces at the end of the line. #{{{
+# Visualization of the spaces at the end of the line.
 # https://vim-jp.org/vim-users-jp/2009/07/12/Hack-40.html
 augroup HighlightIdegraphicSpace
   autocmd!
@@ -432,19 +230,18 @@ augroup HighlightIdegraphicSpace
       \ | catch /E28/
       \ | endtry
 augroup END
-#}}}
 
 def ApplyColorscheme(timer: number): void
   try
     colorscheme pairs # github.com/satorunooshie/pairscolorscheme
   catch /E185/ # Install if not found.
-    echomsg 'Installing pairscolorscheme...'
+    echomsg 'installing pairscolorscheme...'
     const colors_dir_path = expand('~/.vim/colors/')
     MkdirIfNotExists(colors_dir_path)
     silent! system('git clone --depth 1 --recursive https://github.com/satorunooshie/pairscolorscheme ' .. colors_dir_path .. 'pairs')
     silent! system('mv ' .. colors_dir_path .. 'pairs/colors/pairs.vim ' ..  colors_dir_path .. 'pairs.vim')
 
-    echomsg 'Installed pairscolorscheme successfully.'
+    echomsg 'installed pairscolorscheme successfully.'
     colorscheme pairs
   endtry
 
@@ -466,8 +263,6 @@ set signcolumn=yes
 set cursorline
 # Highlight only numbers.
 set cursorlineopt=number
-#}}}
-
 # Avoid `Thanks for flying Vim`.
 set title
 set nowrap
@@ -496,8 +291,11 @@ set previewheight=12
 # Not showing tabs as CTRL-I is displayed, display $ after end of line.
 set nolist
 set listchars=tab:>-,extends:<,precedes:>,trail:-,eol:$,nbsp:%
+#}}}
 
-# Tabline settings. #{{{
+# ---------------------------------------------------------------------------
+# Tabline: #{{{
+#
 g:current_dir = fnamemodify(getcwd(), ':p:~:h') .. ' '
 
 def! g:LightTabLine(): string
@@ -509,61 +307,63 @@ def SetupFullTabLine(): void
   set tabline=%!MakeTabLine()
 enddef
 
-def! g:MakeTabLine(): string #{{{
-  def TabpageLabel(n: number): string #{{{
+def! g:MakeTabLine(): string
+  def TabpageLabel(n: number): string
     const title = gettabwinvar(n, 0, 'title')
     if title !=# ''
       return title
     endif
-    def IsModified(bufnr: number): string #{{{
+    def IsModified(bufnr: number): string
       return getbufvar(bufnr, '&modified') ? '+' : ''
-    enddef #}}}
+    enddef
     const bufnrs: list<number> = tabpagebuflist(n)
     const buflist = join(mapnew(bufnrs, (_, bufnr: number) => bufnr .. IsModified(bufnr)), ',')
     const curbufnr: number = bufnrs[tabpagewinnr(n) - 1]
     const label = '[' .. buflist .. ']' .. pathshorten(bufname(curbufnr))
     const hi = n == tabpagenr() ? '%#TabLineSel#' : '%#TabLine#'
     return '%' .. n .. 'T' .. hi .. label .. '%T%#TabLineFill#'
-  enddef #}}}
+  enddef
   const titles: list<string> = map(range(1, tabpagenr('$')), (_, bufnr: number) => TabpageLabel(bufnr))
   const sep = ' | '
   const tabpages = join(titles, sep) .. sep .. '%#TabLineFill#%T'
   g:current_dir = fnamemodify(getcwd(), ':p:~:h') .. ' '
   return tabpages .. '%=' .. g:current_dir
-enddef #}}}
+enddef
 
 set tabline=%!LightTabLine()
 
 autocmd MyVimrcCmd CursorMoved * ++once SetupFullTabLine()
 #}}}
 
-# StatusLine settings. #{{{
-def! g:Path(): string #{{{
+# ---------------------------------------------------------------------------
+# StatusLine: #{{{
+#
+def! g:Path(): string
   const statusline_path_max_len = 50
   var p = substitute(expand('%:.:h'), expand('$HOME'), '~', '')
   if len(p) > statusline_path_max_len
     return pathshorten(simplify(p))
   endif
   return p
-enddef #}}}
+enddef
 
-def! g:RealSyntaxName(): string #{{{
+def! g:RealSyntaxName(): string
   const syn_id = synID(line('.'), col('.'), 1)
   const real_syn_id = synIDtrans(syn_id)
   return syn_id == real_syn_id ? 'Normal' : synIDattr(real_syn_id, 'name')
-enddef #}}}
+enddef
 
-def! g:Mode(): string #{{{
+def! g:Mode(): string
   const modes: dict<string> = {
     n: 'NORMAL', v: 'VCHAR', V: 'VLINE', '': 'VBLOCK',
     i: 'INSERT', R: 'REPLACE', s: 'SCHAR', S: 'SLINE', '': 'SBLOCK',
     t: 'JOB', c: 'COMMAND', r: 'PROMPT', '!': 'SHELL',
   }
   return modes[mode()[0]]
-enddef #}}}
+enddef
 
 # Return the current file size in human readable format.
-def! g:FileSize(): string #{{{
+def! g:FileSize(): string
   var bytes: float = &encoding ==# &fileencoding
     || &fileencoding ==# ''
     ? line2byte(line('$') + 1) - 1.0
@@ -575,17 +375,17 @@ def! g:FileSize(): string #{{{
   endwhile
   const sizes: list<string> = ['B', 'KB', 'MB', 'GB']
   return bytes > 0 ? printf('%.2f%s', bytes, sizes[i]) : ''
-enddef #}}}
+enddef
 
-def! g:FileType(): string #{{{
+def! g:FileType(): string
   return strlen(&ft) > 0 ? '[' .. &ft .. ']' : '[*]'
-enddef #}}}
+enddef
 
-def! g:SyntaxName(): string #{{{
+def! g:SyntaxName(): string
   return synIDattr(synID(line('.'), col('.'), 1), 'name')
-enddef #}}}
+enddef
 
-def SetFullStatusLine(): void #{{{
+def SetFullStatusLine(): void
   setlocal statusline=
 
   setlocal statusline+=%#StatusLineBufNr#\ %-1.2n
@@ -606,20 +406,20 @@ def SetFullStatusLine(): void #{{{
   setlocal statusline+=%#StatusLineCurrentChar#\ %B[%b]
   setlocal statusline+=%#StatusLinePosition#\ %-10.(%l/%L,%c%)
   setlocal statusline+=%#StatusLinePositionPercentage#\ %p%%
-enddef #}}}
+enddef
 
 # Set a simple statusline when the current buffer is not active.
-def SetSimpleStatusLine(): void #{{{
+def SetSimpleStatusLine(): void
   setlocal statusline=
 
   setlocal statusline+=%#StatusLineNCPath#%-0.20{Path()}%0*
   setlocal statusline+=%#StatusLineNCFileName#\/%t
-enddef #}}}
+enddef
 
 set statusline=%f
 autocmd MyVimrcCmd CursorMoved * ++once call ApplyFullStatusLine()
 
-def ApplyFullStatusLine(): void #{{{
+def ApplyFullStatusLine(): void
   # Reset the statusline to the full status line.
   set statusline=
   SetFullStatusLine()
@@ -636,13 +436,13 @@ def ApplyFullStatusLine(): void #{{{
   endfor
 
   # Normal operation.
-  augroup StatusLine #{{{
+  augroup StatusLine
     autocmd!
     autocmd BufEnter * SetFullStatusLine()
     autocmd BufLeave,BufNew,BufRead,BufNewFile * SetFullStatusLine()
     # autocmd BufLeave,BufNew,BufRead,BufNewFile * SetSimpleStatusLine()
-  augroup END #}}}
-enddef #}}}
+  augroup END
+enddef
 #}}}
 
 # ---------------------------------------------------------------------------
@@ -661,7 +461,7 @@ set hlsearch
 #
 var git_root = ''
 var git_root_cache = ''
-def SetGitRoot(): void #{{{
+def SetGitRoot(): void
   if g:current_dir !=# git_root_cache
     git_root_cache = g:current_dir
     git_root = system('git rev-parse --show-toplevel')
@@ -671,7 +471,7 @@ def SetGitRoot(): void #{{{
       git_root = git_root->trim()->expand()
     endif
   endif
-enddef #}}}
+enddef
 command! -bar SetGitRoot SetGitRoot()
 
 command! -bar ToScratch setlocal buftype=nofile bufhidden=hide noswapfile
@@ -690,9 +490,9 @@ command! FilesBuffer <mods> Files %:p:h
 command! FilesCurrent <mods> Files .
 
 # Filter files that are not readable and not in the git repository if it exists.
-def FilterFiles(files: list<string>): list<string> #{{{
+def FilterFiles(files: list<string>): list<string>
   return files->copy()->filter((_, v: string) => v->expand()->filereadable())->mapnew((_, v: string) => v->trim()->expand()->substitute(expand('$HOME'), '~', ''))->filter((_, v: string) => (empty(git_root) || expand(v) =~# git_root) && v !~# '\.git/')
-enddef #}}}
+enddef
 command! MRU <mods> ModsNew MRU
   | SetGitRoot
   | ToScratchForFiles
@@ -710,7 +510,7 @@ command! ScriptNames <mods> ModsNew ScriptNames
 # ---------------------------------------------------------------------------
 # Utilities: #{{{
 #
-# :TCD to the directory of the current file or specified path. #{{{
+# :TCD to the directory of the current file or specified path.
 command! -nargs=? -complete=dir -bang TCD ChangeCurrentDir('<args>', '<bang>')
 def ChangeCurrentDir(directory: string, bang: string): void
   if directory == ''
@@ -725,9 +525,8 @@ def ChangeCurrentDir(directory: string, bang: string): void
     pwd
   endif
 enddef
-#}}}
 
-# Restore cursor position automatically. #{{{
+# Restore cursor position automatically.
 def RestoreCursorPosition(): void
   if line("'\"") > 1 && line("'\"") <= line("$") &&
       &filetype !~# 'commit' && index(['xxd', 'gitrebase'], &filetype) == -1
@@ -735,11 +534,10 @@ def RestoreCursorPosition(): void
   endif
 enddef
 autocmd MyVimrcCmd BufReadPost * RestoreCursorPosition()
-#}}}
 
 autocmd MyVimrcCmd FileType proto setlocal shiftwidth=2 tabstop=2 makeprg=buf
 
-# Sanitize the command line history. #{{{
+# Sanitize the command line history.
 def SanitizeHistory(): void
   var cmd = histget(":", -1)
   if cmd ==# "x" || cmd ==# "xa" || cmd ==# "e!" ||
@@ -748,134 +546,15 @@ def SanitizeHistory(): void
   endif
 enddef
 autocmd MyVimrcCmd ModeChanged c:* SanitizeHistory()
-#}}}
 
-# Diff before save. #{{{
+# Diff before save.
 command! DiffOrig vert new | set bt=nofile | execute 'r ++edit ' .. expand('#') | deletebufline('%', 1) | diffthis | wincmd p | diffthis
-#}}}
 
-# Convert location list to quickfix list. #{{{
+# Convert location list to quickfix list.
 command! Loc2Qf call setqflist(getloclist(0)) | lclose | copen
-#}}}
 
-# Convert quickfix list to location list. #{{{
+# Convert quickfix list to location list.
 command! Qf2Loc call setloclist(0, getqflist()) | cclose | lopen
-#}}}
-#}}}
-
-# ---------------------------------------------------------------------------
-# Plugins: #{{{
-#
-# ---------------------------------------------------------------------------
-# termdebug: #{{{
-#
-if !exists('g:termdebug_config')
-  g:termdebug_config = {}
-endif
-
-g:termdebug_config['winbar'] = 0
-g:termdebug_config['popup'] = 0
-g:termdebug_config['sign'] = '>>'
-#}}}
-
-# ---------------------------------------------------------------------------
-# git-lens: #{{{
-#
-g:GIT_LENS_CONFIG = {
-  blame_prefix: '    ---- ',
-  blame_highlight: 'LineNr',
-  blame_wrap: false,
-  blame_empty_line: false,
-  blame_delay: 50,
-}
-#}}}
-
-# ---------------------------------------------------------------------------
-# vim-quickrun: #{{{
-#
-if !exists('g:quickrun_config')
-  g:quickrun_config = {}
-endif
-
-g:quickrun_config['_'] = {
-  'outputter/buffer/split': ':botright 8sp',
-  'outputter/buffer/close_on_empty': 1,
-  'runner': 'job',
-}
-#}}}
-
-# ---------------------------------------------------------------------------
-# vimhelpgenerator: #{{{
-#
-g:vimhelpgenerator_defaultlanguage = 'en'
-#}}}
-
-# ---------------------------------------------------------------------------
-# copilot: #{{{
-#
-imap <C-C><C-N> <Plug>(copilot-next)
-imap <C-C><C-P> <Plug>(copilot-previous)
-#}}}
-
-# ---------------------------------------------------------------------------
-# vim-lsp: #{{{
-#
-g:lsp_fold_enabled = 0
-g:lsp_diagnostics_echo_cursor = 1
-g:lsp_diagnostics_virtual_text_enabled = 0
-g:lsp_tagfunc_source_methods = ['definition']
-
-def LspBufferEnabled(): void
-  setlocal omnifunc=lsp#complete
-  setlocal tagfunc=lsp#tagfunc
-enddef
-
-augroup LspInstall
-  autocmd!
-  autocmd User lsp_buffer_enabled LspBufferEnabled()
-augroup END
-
-# Format and organize imports on save.
-def GoFormatAndOrganizeImports(): void
-  silent execute 'LspDocumentFormatSync'
-  silent execute 'LspCodeActionSync source.organizeImports'
-enddef
-autocmd MyVimrcCmd BufWritePre *.go GoFormatAndOrganizeImports()
-
-g:lsp_settings = {
-  gopls: {
-    initialization_options: {
-      matcher: 'fuzzy',
-      deepCompletion: false,
-      usePlaceholders: false,
-      symbolMatcher: 'fuzzy',
-      symbolStyle: 'full',
-      gofumpt: true,
-      staticcheck: false,
-      codelenses: {
-        gc_details: true,
-        test: true,
-      },
-    },
-  }
-}
-
-# if not exists or not writable, do not turn on verbose logging.
-# filewritable returns 2 when the path is a directory and writable,
-# and returns 1 when the path is writable, so it is compared to 0 to convert to Bool.
-if filewritable(expand('~/tmp')) !=# 0
-  g:lsp_log_verbose = 1
-  g:lsp_log_file = expand('~/tmp/vim-lsp-' .. strftime('%Y%m%d') .. '.log')
-  g:lsp_settings['gopls']['cmd'] = ['gopls', '-logfile', expand('~/tmp/gopls-' .. strftime('%Y%m%d') .. '.log')]
-endif
-#}}}
-
-# ---------------------------------------------------------------------------
-# asyncomplete: #{{{
-#
-g:asyncomplete_enable_for_all = 0
-#}}}
-
 #}}}
 
 # ---------------------------------------------------------------------------
@@ -1042,6 +721,7 @@ onoremap au a]
 xnoremap au a]
 onoremap iu i]
 xnoremap iu i]
+#}}}
 
 # ---------------------------------------------------------------------------
 # Custom commands: #{{{
@@ -1061,7 +741,22 @@ nnoremap <silent> <Leader>co <Cmd>call system('git checkout -- ' .. expand('%'))
 # ---------------------------------------------------------------------------
 # Plugins: #{{{
 #
+
+# ---------------------------------------------------------------------------
+# termdebug: #{{{
+#
+if !exists('g:termdebug_config')
+  g:termdebug_config = {}
+endif
+
+g:termdebug_config['winbar'] = 0
+g:termdebug_config['popup'] = 0
+g:termdebug_config['sign'] = '>>'
+#}}}
+
+# ---------------------------------------------------------------------------
 # forge.vim: #{{{
+#
 def! g:ForgeOperateUnderCursor(op: string): void
   const dir: string = forge#Curdir()
   const name: string = substitute(getline('.'), '[/\\]$', '', '')
@@ -1109,39 +804,131 @@ def! g:ForgeOperateUnderCursor(op: string): void
   silent copen 8 | wincmd p
 enddef
 
-augroup MyForgeCmd
-  autocmd!
-  autocmd FileType forge nnoremap <buffer> <Space>cp <Cmd>call ForgeOperateUnderCursor('copy')<CR>
-  autocmd FileType forge nnoremap <buffer> <Space>mv <Cmd>call ForgeOperateUnderCursor('move')<CR>
-augroup END
-augroup ForgeBlackholeDelete
-  autocmd!
-  autocmd FileType forge nnoremap <buffer> dd "_dd
-augroup END
+def ForgeSettings(): void
+  augroup MyForgeCmd
+    autocmd!
+    autocmd FileType forge nnoremap <buffer> <Space>cp <Cmd>call ForgeOperateUnderCursor('copy')<CR>
+    autocmd FileType forge nnoremap <buffer> <Space>mv <Cmd>call ForgeOperateUnderCursor('move')<CR>
+  augroup END
+enddef
 #}}}
 
-# vim-quickrun: #{{{
-nmap <Leader>r <Plug>(quickrun)
-omap <Leader>r <Plug>(quickrun)
-xmap <Leader>r <Plug>(quickrun)
-#}}}
-
-# rainbowcyclone.vim: #{{{
-nmap c/ <Plug>(rc_search_forward)
-nmap c? <Plug>(rc_search_backward)
-nmap c* <Plug>(rc_search_forward_with_cursor)
-nmap c# <Plug>(rc_search_backward_with_cursor)
-nmap cn <Plug>(rc_search_forward_with_last_pattern)
-nmap cN <Plug>(rc_search_backward_with_last_pattern)
-# nmap <Esc><Esc> <Plug>(rc_reset):nohlsearch<CR>
-# nnoremap <Esc><Esc> <Cmd>RCReset<CR>:nohlsearch<CR>
-#}}}
-
+# ---------------------------------------------------------------------------
 # git-lens: #{{{
-nnoremap <silent> <Space>gl <Cmd>call ToggleGitLens()<CR>
+#
+def GitLensSettings(): void
+  g:GIT_LENS_CONFIG = {
+    blame_prefix: '    ---- ',
+    blame_highlight: 'LineNr',
+    blame_wrap: false,
+    blame_empty_line: false,
+    blame_delay: 50,
+  }
+enddef
+
+def RemapGitLensKeys(): void
+  nnoremap <silent> <Space>gl <Cmd>call ToggleGitLens()<CR>
+enddef
 #}}}
 
+# ---------------------------------------------------------------------------
+# vim-quickrun: #{{{
+#
+def QuickrunSettings(): void
+  if !exists('g:quickrun_config')
+    g:quickrun_config = {}
+  endif
+
+  g:quickrun_config['_'] = {
+    'outputter/buffer/split': ':botright 8sp',
+    'outputter/buffer/close_on_empty': 1,
+    'runner': 'job',
+  }
+enddef
+
+def RemapQuickrunKeys(): void
+  nmap <Leader>r <Plug>(quickrun)
+  omap <Leader>r <Plug>(quickrun)
+  xmap <Leader>r <Plug>(quickrun)
+enddef
+
+#}}}
+
+# ---------------------------------------------------------------------------
+# vimhelpgenerator: #{{{
+#
+g:vimhelpgenerator_defaultlanguage = 'en'
+#}}}
+
+# ---------------------------------------------------------------------------
+# copilot: #{{{
+#
+def RemapCopilotKeys(): void
+  imap <C-C><C-N> <Plug>(copilot-next)
+  imap <C-C><C-P> <Plug>(copilot-previous)
+enddef
+#}}}
+
+# ---------------------------------------------------------------------------
 # vim-lsp: #{{{
+#
+def LspBufferEnabled(): void
+  setlocal omnifunc=lsp#complete
+  setlocal tagfunc=lsp#tagfunc
+enddef
+
+# Format and organize imports on save.
+def GoFormatAndOrganizeImports(): void
+  silent execute 'LspDocumentFormatSync'
+  silent execute 'LspCodeActionSync source.organizeImports'
+enddef
+
+def LspSettings(): void
+  g:lsp_fold_enabled = 0
+  g:lsp_diagnostics_echo_cursor = 1
+  g:lsp_diagnostics_virtual_text_enabled = 0
+  g:lsp_tagfunc_source_methods = ['definition']
+
+  augroup LspInstall
+    autocmd!
+    autocmd User lsp_buffer_enabled LspBufferEnabled()
+  augroup END
+
+  autocmd MyVimrcCmd BufWritePre *.go GoFormatAndOrganizeImports()
+
+  g:lsp_settings = {
+    gopls: {
+      initialization_options: {
+        matcher: 'fuzzy',
+        deepCompletion: false,
+        usePlaceholders: false,
+        symbolMatcher: 'fuzzy',
+        symbolStyle: 'full',
+        gofumpt: true,
+        staticcheck: false,
+        codelenses: {
+          gc_details: true,
+          test: true,
+        },
+      },
+    }
+  }
+
+  # if not exists or not writable, do not turn on verbose logging.
+  # filewritable returns 2 when the path is a directory and writable,
+  # and returns 1 when the path is writable, so it is compared to 0 to convert to Bool.
+  if filewritable(expand('~/tmp')) !=# 0
+    g:lsp_log_verbose = 1
+    g:lsp_log_file = expand('~/tmp/vim-lsp-' .. strftime('%Y%m%d') .. '.log')
+    g:lsp_settings['gopls']['cmd'] = ['gopls', '-logfile', expand('~/tmp/gopls-' .. strftime('%Y%m%d') .. '.log')]
+  endif
+
+  try
+    lsp#enable()
+  catch /E117/
+  endtry
+enddef
+
 def! g:LspDocumentDiagnostics(): void
   execute 'LspDocumentDiagnostics'
   # Technically it is better to wait for the completion of the LSP.
@@ -1149,29 +936,76 @@ def! g:LspDocumentDiagnostics(): void
     Loc2Qf
   endif
 enddef
+
 def! g:LspDocumentSymbolFiltered(): void
   silent execute 'LspDocumentSymbol'
   # Wait for the completion of the LSP.
   sleep 10m
   execute 'Cfilter function\|method'
 enddef
-nnoremap <silent> <Space>rf <Cmd>LspReferences<CR>
-nnoremap <silent> <Space>rn <Cmd>LspRename<CR>
-nnoremap <silent> <Space>im <Cmd>LspImplementation<CR>
-nnoremap <silent> <Space>ho <Cmd>LspHover<CR>
-nnoremap <silent> <Space>ds <Cmd>call LspDocumentSymbolFiltered()<CR>
-nnoremap <silent> <Space>dd <Cmd>call LspDocumentDiagnostics()<CR>
-nnoremap <silent> <Space>ca <Cmd>LspCodeAction<CR>
-nnoremap <silent> <Space>nr <Cmd>LspNextError<CR>
-nnoremap <silent> <Space>pr <Cmd>LspPreviousError<CR>
+
+def RemapLspKeys(): void
+  nnoremap <silent> <Space>rf <Cmd>LspReferences<CR>
+  nnoremap <silent> <Space>rn <Cmd>LspRename<CR>
+  nnoremap <silent> <Space>im <Cmd>LspImplementation<CR>
+  nnoremap <silent> <Space>ho <Cmd>LspHover<CR>
+  nnoremap <silent> <Space>ds <Cmd>call LspDocumentSymbolFiltered()<CR>
+  nnoremap <silent> <Space>dd <Cmd>call LspDocumentDiagnostics()<CR>
+  nnoremap <silent> <Space>ca <Cmd>LspCodeAction<CR>
+  nnoremap <silent> <Space>nr <Cmd>LspNextError<CR>
+  nnoremap <silent> <Space>pr <Cmd>LspPreviousError<CR>
+enddef
 #}}}
 
+# ---------------------------------------------------------------------------
+# vim-signify: #{{{
+#
+def SignifySettings(): void
+  try
+    execute 'SignifyEnable'
+  catch /E492/
+  endtry
+enddef
+#}}}
+
+# ---------------------------------------------------------------------------
 # asyncomplete: #{{{
+#
+# Apply asyncomplete settings to the current buffer if the filetype is
+# enabled.
+# Handle exceptions raised by lazy loading of plugins.
+def ApplyAsyncompleteSettingByFileType()
+  const enabled = get(g:asyncomplete_enabled_filetype, &ft, 0)
+  if enabled
+    try
+      call g:asyncomplete#enable_for_buffer()
+    catch /E117/
+    endtry
+    return
+  endif
+  try
+    call g:asyncomplete#disable_for_buffer()
+  catch /E117/
+  endtry
+enddef
+
+def AsyncompleteSettings(): void
+  g:asyncomplete_enable_for_all = 0
+  # Use BufEnter to apply settings when switching between buffers, as FileType
+  # is triggered only when the filetype changes or when a file is first opened.
+  # Buffer ensures that the asyncomplete settings are applied even when the
+  # filetype remains the same.
+  augroup AsyncompleteFiletypeToggle
+    autocmd!
+    autocmd BufEnter * ApplyAsyncompleteSettingByFileType()
+  augroup END
+enddef
+
 g:asyncomplete_enabled_filetype = {}
 
 # Toggle asyncomplete for the current filetype.
 # Handle exceptions raised by lazy loading of plugins.
-def! g:ToggleAsyncompleteForFiletype() #{{{
+def! g:ToggleAsyncompleteForFiletype()
   const enabled = get(g:asyncomplete_enabled_filetype, &ft, 0)
   if enabled
     remove(g:asyncomplete_enabled_filetype, &ft)
@@ -1191,39 +1025,234 @@ def! g:ToggleAsyncompleteForFiletype() #{{{
   # again without being applied to the current buffer at least, so set the
   # flag only when successful.
   g:asyncomplete_enabled_filetype[&ft] = 1
-enddef #}}}
+enddef
 
-nnoremap <silent> <Space>tac <Cmd>call g:ToggleAsyncompleteForFiletype()<CR>
+def RemapAsyncompleteKeys(): void
+  nnoremap <silent> <Space>tac <Cmd>call ToggleAsyncompleteForFiletype()<CR>
+enddef
+#}}}
 
-# Apply asyncomplete settings to the current buffer if the filetype is
-# enabled.
-# Handle exceptions raised by lazy loading of plugins.
-def ApplyAsyncompleteSettingByFileType() #{{{
-  const enabled = get(g:asyncomplete_enabled_filetype, &ft, 0)
-  if enabled
-    try
-      call g:asyncomplete#enable_for_buffer()
-    catch /E117/
-    endtry
-    return
+# ---------------------------------------------------------------------------
+# rainbowcyclone.vim: #{{{
+#
+def RemapRainbowCycloneKeys(): void
+  nmap c/ <Plug>(rc_search_forward)
+  nmap c? <Plug>(rc_search_backward)
+  nmap c* <Plug>(rc_search_forward_with_cursor)
+  nmap c# <Plug>(rc_search_backward_with_cursor)
+  nmap cn <Plug>(rc_search_forward_with_last_pattern)
+  nmap cN <Plug>(rc_search_backward_with_last_pattern)
+# nmap <Esc><Esc> <Plug>(rc_reset):nohlsearch<CR>
+# nnoremap <Esc><Esc> <Cmd>RCReset<CR>:nohlsearch<CR>
+enddef
+#}}}
+#}}}
+
+# ---------------------------------------------------------------------------
+# Load Plugins: #{{{
+#
+def AddPlugins(urls: list<string>, Postprocesses: list<func(): void> = []): list<dict<any>>
+  var plugins: list<dict<any>> = []
+  var last = len(urls) - 1
+
+  for i in range(len(urls))
+    var ps: list<func(): void> = []
+    if i == last && !empty(Postprocesses)
+      ps = copy(Postprocesses)
+    endif
+    add(plugins, {'url': urls[i], 'postprocesses': ps})
+  endfor
+
+  return plugins
+enddef
+
+# Skip loading plugins in the start directory, because they are loaded
+# automatically.
+$PACKPATH = expand('~/.vim/pack/Bundle')
+final plugins: dict<list<dict<any>>> = {
+  'start': AddPlugins(['https://github.com/satorunooshie/forge.vim'], [function('ForgeSettings')]),
+  'opt': AddPlugins([
+    'https://github.com/kana/vim-textobj-user',
+    'https://github.com/kana/vim-operator-user',
+    'https://github.com/kana/vim-textobj-indent',
+    'https://github.com/kana/vim-textobj-syntax',
+    'https://github.com/kana/vim-textobj-line',
+    'https://github.com/kana/vim-textobj-fold',
+    'https://github.com/kana/vim-textobj-entire',
+    'https://github.com/thinca/vim-textobj-between',
+    'https://github.com/thinca/vim-textobj-comment',
+    'https://github.com/h1mesuke/textobj-wiw',
+    'https://github.com/sgur/vim-textobj-parameter',
+    'https://github.com/kana/vim-operator-replace',
+  ]) +
+  AddPlugins(['https://github.com/thinca/vim-quickrun'], [function('QuickrunSettings'), function('RemapQuickrunKeys')]) +
+  AddPlugins([
+    'https://github.com/prabirshrestha/asyncomplete.vim',
+    'https://github.com/prabirshrestha/asyncomplete-lsp.vim',
+  ], [function('RemapAsyncompleteKeys')]) +
+  AddPlugins([
+    'https://github.com/prabirshrestha/vim-lsp',
+    'https://github.com/mattn/vim-lsp-settings',
+  ], [function('LspSettings'), function('RemapLspKeys')]) +
+  AddPlugins(['https://github.com/Eliot00/git-lens.vim'], [function('GitLensSettings'), function('RemapGitLensKeys')]) +
+  AddPlugins(['https://github.com/mhinz/vim-signify'], [function('SignifySettings')]) +
+  AddPlugins(['https://github.com/daisuzu/rainbowcyclone.vim'], [function('RemapRainbowCycloneKeys')]) +
+  AddPlugins(['https://github.com/github/copilot.vim'], [function('RemapCopilotKeys')]) +
+  AddPlugins([
+    # Make blockwise visual mode more useful.
+    # ex: shift v + shift i.
+    'https://github.com/kana/vim-niceblock',
+    'https://github.com/knsh14/vim-github-link',
+    'https://github.com/thinca/vim-qfreplace',
+    'https://github.com/itchyny/vim-qfedit',
+    # Replace the built-in matchparen for better performance.
+    'https://github.com/itchyny/vim-parenmatch',
+    # Replace the built-in logipat.vim for better performance.
+    'https://github.com/satorunooshie/logicpat.vim',
+    # Live preview substitute result and
+    # highlight patterns and ranges for Ex commands in Command-line mode.
+    'https://github.com/markonm/traces.vim',
+    # Star for visual mode.
+    # ex: shift v + *.
+    'https://github.com/thinca/vim-visualstar',
+    'https://github.com/mattn/vim-maketable',
+    'https://github.com/vim-jp/vimdoc-ja',
+    # Prettyprint vim variables.
+    'https://github.com/thinca/vim-prettyprint',
+    'https://github.com/thinca/vim-showtime',
+    'https://github.com/LeafCage/vimhelpgenerator',
+    'https://github.com/lifepillar/vim-colortemplate',
+  ])
+}
+
+def CreateHelpTags(path: string): void
+  if isdirectory(path)
+    execute 'helptags ' .. path
   endif
-  try
-    call g:asyncomplete#disable_for_buffer()
-  catch /E117/
-  endtry
-enddef #}}}
+enddef
 
-# Use BufEnter to apply settings when switching between buffers, as FileType
-# is triggered only when the filetype changes or when a file is first opened.
-# Buffer ensures that the asyncomplete settings are applied even when the
-# filetype remains the same.
-augroup AsyncompleteFiletypeToggle
-  autocmd!
-  autocmd BufEnter * ApplyAsyncompleteSettingByFileType()
-augroup END
-#}}}
+def MkdirIfNotExists(path: string): void
+  if !isdirectory(path)
+    mkdir(path, 'p')
+  endif
+enddef
 
-#}}}
+def! g:InstallPackPlugins(): void
+  # loop from `start` avoid dependency problems.
+  for key in reverse(sort(keys(plugins)))
+    const dir = expand($PACKPATH .. '/' .. key)
+    MkdirIfNotExists(dir)
+
+    for plugin in plugins[key]
+      const url = plugin.url
+      const dst = expand(dir .. '/' .. split(url, '/')[-1])
+      if isdirectory(dst)
+        # Plugin has already been installed.
+        continue
+      endif
+
+      echomsg 'installing: ' .. dst
+      system('git clone --recursive ' .. url .. ' ' .. dst)
+      CreateHelpTags(expand(dst .. '/doc/'))
+      echomsg 'installed: ' .. dst
+    endfor
+  endfor
+enddef
+
+def! g:UpdatePackPlugins(): void
+  var idx = 0
+  const bufname = 'vimrc://update/plugins'
+  # Needs escape not to use file-pattern.
+  var prevbuf: number = bufnr(bufname)
+  if prevbuf != -1
+    # Needs `:` before Ex command with range.
+    execute ':' .. prevbuf .. 'bwipeout!'
+  endif
+  var nr: number = bufadd(bufname)
+  bufload(nr)
+  execute ':' .. nr .. 'sb'
+  ToScratch
+
+  def PluginUpdateHandler(timer: number): void
+    const plugin_dir = expand($PACKPATH .. '/' .. 'opt')
+    const plugin_url = plugins.opt[idx].url
+    const plugin_name = split(plugin_url, '/')[-1]
+    const dst = expand(plugin_dir .. '/' .. plugin_name)
+
+    def DisplayUpdatedPlugin(name: string, channel: channel, msg: string): void
+      appendbufline(nr, 0, name .. ': ' .. msg)
+    enddef
+
+    job_start(
+      'git -C ' .. dst .. ' pull --ff --ff-only',
+      {'callback': function(DisplayUpdatedPlugin, [plugin_name])},
+    )
+
+    def UpdateHelpTags(): void
+      for key in keys(plugins)
+        var dir = expand($PACKPATH .. '/' .. key)
+
+        for spec in plugins[key]
+          const url = spec.url
+          const path = expand(dir .. '/' .. split(url, '/')[-1])
+          if !isdirectory(path)
+            # Plugin is not installed.
+            continue
+          endif
+
+          echomsg 'helptags: ' .. path
+          CreateHelpTags(expand(path .. '/doc/'))
+        endfor
+      endfor
+    enddef
+
+    ++idx
+    if idx == len(plugins.opt)
+      UpdateHelpTags()
+    endif
+  enddef
+
+  idx = 0
+  timer_start(100, function(PluginUpdateHandler), {'repeat': len(plugins.opt)})
+enddef
+
+var pidx = 0
+def PackAddHandler(timer: number)
+  const spec = plugins.opt[pidx]
+  const url = spec.url
+  const plugin_name = split(url, '/')[-1]
+
+  const plugin_path = expand($PACKPATH .. '/opt/' .. plugin_name)
+  if isdirectory(plugin_path)
+    execute 'packadd ' .. plugin_name
+    for Postprocess in spec.postprocesses
+      Postprocess()
+    endfor
+  endif
+
+  ++pidx
+  if pidx == len(plugins.opt)
+    # Install fzf.
+    if executable('fzf')
+      set rtp+=/opt/homebrew/opt/fzf
+      runtime plugin/fzf.vim
+    endif
+
+    packadd comment
+    packadd cfilter
+    # Extended % matching.
+    packadd matchit
+    # For filetype plugin.
+    doautocmd FileType
+  endif
+enddef
+
+if has('vim_starting') && has('timers')
+  autocmd MyVimrcCmd VimEnter * timer_start(15, PackAddHandler, {'repeat': len(plugins.opt)})
+endif
+
+# For ftdetect scripts to be loaded, need to write AFTER all `packadd!` commands.
+filetype plugin indent on
 #}}}
 
 # ---------------------------------------------------------------------------
