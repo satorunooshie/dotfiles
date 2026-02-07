@@ -771,12 +771,14 @@ def! g:ForgeOperateUnderCursor(op: string): void
     if dst ==# ''
       return
     endif
+    MkdirIfNotExists(fnamemodify(dst, ':p:h'))
     cmd = 'cp -a ' .. fnameescape(path) .. ' ' .. fnameescape(dst)
   elseif op ==# 'move'
     dst = input('Move to: ', dir, completion)
     if dst ==# ''
       return
     endif
+    MkdirIfNotExists(fnamemodify(dst, ':p:h'))
     cmd = 'mv ' .. fnameescape(path) .. ' ' .. fnameescape(dst)
   else
     return
@@ -804,13 +806,11 @@ def! g:ForgeOperateUnderCursor(op: string): void
   silent copen 8 | wincmd p
 enddef
 
-def ForgeSettings(): void
-  augroup MyForgeCmd
-    autocmd!
-    autocmd FileType forge nnoremap <buffer> <Space>cp <Cmd>call ForgeOperateUnderCursor('copy')<CR>
-    autocmd FileType forge nnoremap <buffer> <Space>mv <Cmd>call ForgeOperateUnderCursor('move')<CR>
-  augroup END
-enddef
+augroup MyForgeCmd
+  autocmd!
+  autocmd FileType forge nnoremap <buffer> <Space>cp <Cmd>call ForgeOperateUnderCursor('copy')<CR>
+  autocmd FileType forge nnoremap <buffer> <Space>mv <Cmd>call ForgeOperateUnderCursor('move')<CR>
+augroup END
 #}}}
 
 # ---------------------------------------------------------------------------
@@ -1090,7 +1090,7 @@ enddef
 # automatically.
 $PACKPATH = expand('~/.vim/pack/Bundle')
 final plugins: dict<list<dict<any>>> = {
-  'start': AddPlugins(['https://github.com/satorunooshie/forge.vim'], [ForgeSettings]),
+  'start': AddPlugins(['https://github.com/satorunooshie/forge.vim']),
   'opt': AddPlugins([
     'https://github.com/kana/vim-textobj-user',
     'https://github.com/kana/vim-operator-user',
