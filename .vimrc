@@ -989,8 +989,8 @@ def ApplyAsyncompleteSettingByFileType()
   endtry
 enddef
 
+g:asyncomplete_enable_for_all = 0
 def AsyncompleteSettings(): void
-  g:asyncomplete_enable_for_all = 0
   # Use BufEnter to apply settings when switching between buffers, as FileType
   # is triggered only when the filetype changes or when a file is first opened.
   # Buffer ensures that the asyncomplete settings are applied even when the
@@ -1009,6 +1009,7 @@ def! g:ToggleAsyncompleteForFiletype()
   const enabled = get(g:asyncomplete_enabled_filetype, &ft, 0)
   if enabled
     remove(g:asyncomplete_enabled_filetype, &ft)
+    echomsg 'asyncomplete disabled for filetype: ' .. &ft
     try
       call g:asyncomplete#disable_for_buffer()
     catch /E117/
@@ -1025,6 +1026,7 @@ def! g:ToggleAsyncompleteForFiletype()
   # again without being applied to the current buffer at least, so set the
   # flag only when successful.
   g:asyncomplete_enabled_filetype[&ft] = 1
+  echomsg 'asyncomplete enabled for filetype: ' .. &ft
 enddef
 
 def RemapAsyncompleteKeys(): void
