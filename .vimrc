@@ -427,10 +427,12 @@ def ApplyFullStatusLine(): void
   # Apply the status line to the remaining buffers
   for bufnr in range(1, bufnr('$'))
     if bufexists(bufnr) && buflisted(bufnr)
-      const winid = bufwinnr(bufnr)
-      if winid > 0 && winid != winnr() # Skip the current window.
-        execute ':' .. winid .. 'wincmd w'
-        SetFullStatusLine()
+      const win_nr = bufwinnr(bufnr)
+      if win_nr > 0 && win_nr != winnr() # Skip the current window.
+        const winid = win_getid(win_nr)
+        if winid > 0
+          win_execute(winid, 'call SetFullStatusLine()')
+        endif
       endif
     endif
   endfor
