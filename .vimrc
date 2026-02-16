@@ -515,7 +515,7 @@ command! ScriptNames <mods> ModsNew ScriptNames
 # :TCD to the directory of the current file or specified path.
 command! -nargs=? -complete=dir -bang TCD ChangeCurrentDir('<args>', '<bang>')
 def ChangeCurrentDir(directory: string, bang: string): void
-  if directory == ''
+  if directory ==# ''
     if &buftype !=# 'terminal'
       tcd %:p:h
     endif
@@ -523,7 +523,7 @@ def ChangeCurrentDir(directory: string, bang: string): void
     execute 'tcd ' .. directory
   endif
 
-  if bang == ''
+  if bang ==# ''
     pwd
   endif
 enddef
