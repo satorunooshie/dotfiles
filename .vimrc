@@ -388,7 +388,7 @@ enddef
 def SetFullStatusLine(): void
   setlocal statusline=
 
-  setlocal statusline+=%#StatusLineBufNr#\ %-1.2n
+  setlocal statusline+=%#StatusLineBufNr#\ %-1n
   setlocal statusline+=\ %h%#StatusLineFlag#%m%r%w
   setlocal statusline+=%#StatusLinePath#\ %-0.50{Path()}%0*
   setlocal statusline+=%#StatusLineFileName#\/%t
